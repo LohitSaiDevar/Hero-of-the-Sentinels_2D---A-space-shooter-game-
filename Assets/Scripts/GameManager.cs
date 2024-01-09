@@ -1,6 +1,6 @@
 using System.Collections;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject enemyGruntPrefab;
     public GameObject eliteGruntPrefab;
     public GameObject dronePrefab;
-    
+
     [SerializeField] TextMeshProUGUI scoreText;
     int score = 0;
 
@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
     void SpawnStars()
     {
         Vector3 spawnStarPos = new(0, 2.5f, 40);
-        Instantiate(starsPrefab, spawnStarPos, Quaternion.Euler(90,0,0));
+        Instantiate(starsPrefab, spawnStarPos, Quaternion.Euler(90, 0, 0));
     }
     public void SpawnEnemyGrunt()
     {
