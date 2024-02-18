@@ -16,7 +16,7 @@ public class Boss : MonoBehaviour
     [SerializeField] int points;
 
     PlayerController player;
-    private void Start()
+    private void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();
@@ -126,8 +126,9 @@ public class Boss : MonoBehaviour
 
     void Movement()
     {
-        transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-
-        if(transform.position )
+        if (transform.position.z != 4)
+        {
+            transform.Translate(moveSpeed * Time.deltaTime * Vector3.forward);
+        }
     }
 }

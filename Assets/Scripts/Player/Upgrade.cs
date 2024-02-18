@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class Upgrade : MonoBehaviour
 {
-    [SerializeField] Sprite mediumSprite;  // Reference to the 'Medium' sprite
+    [SerializeField] Sprite lvl2Sprite;
+    [SerializeField] Sprite lvl3Sprite;
     [SerializeField] SpriteRenderer spriteRenderer;
+    [SerializeField] PlayerController player;
 
     void Start()
     {
@@ -11,26 +13,36 @@ public class Upgrade : MonoBehaviour
         spriteRenderer = GameObject.Find("Sprite_Player").GetComponent<SpriteRenderer>();
     }
 
-    void Update()
-    {
-        // Check if the space key is pressed
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            // Call a method to handle the spaceship upgrade
-            UpgradeSpaceship();
-        }
-    }
-
-    void UpgradeSpaceship()
+    public void UpgradeSpaceship(int lvl)
     {
         // Change the sprite to the 'Medium' sprite
-        if (mediumSprite != null)
+        if (lvl == 3)
         {
-            spriteRenderer.sprite = mediumSprite;
+            player.speed += 3;
+            if (lvl2Sprite != null)
+            {
+                spriteRenderer.sprite = lvl2Sprite;
+            }
+            else
+            {
+                Debug.LogError("Medium sprite not assigned in the inspector.");
+            }
+        }
+        else if(lvl == 6)
+        {
+            player.speed += 3;
+            if (lvl3Sprite != null)
+            {
+                spriteRenderer.sprite = lvl3Sprite;
+            }
+            else
+            {
+                Debug.LogError("Medium sprite not assigned in the inspector.");
+            }
         }
         else
         {
-            Debug.LogError("Medium sprite not assigned in the inspector.");
+            return;
         }
     }
 }

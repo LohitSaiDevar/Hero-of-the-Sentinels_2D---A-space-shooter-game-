@@ -1,35 +1,47 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    float horizontalInput;
-    float verticalInput;
-    [SerializeField] float speed;
+    public float speed;
 
     [SerializeField] HealthBar_Player healthBar;
     [SerializeField] int maxHealth = 20;
-    int currentHealth;
+    int currentHealth, currentExp = 0, minExp = 0, maxExp = 100;
     public int attackDamage;
 
     GameManager gameManager;
 
     [SerializeField] PowerAbsorber powerAbsorber;
     [SerializeField] PowerUps powerUps;
+
+    [SerializeField] ExperienceBar expBar;
+    public int currentLvl = 1;
+    [SerializeField] TextMeshProUGUI lvlText;
+    [SerializeField] Upgrade upgrade;
+
+    CommandInvoker commandInvoker;
+    float horizontalInput;
+    float verticalInput;
+
     private void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
         Debug.Log("Current Health: " + currentHealth);
+        Debug.Log("Current lvl: " + currentLvl);
+        Debug.Log("Min exp: " + minExp);
+        expBar.SetMinExp(currentExp);
+        expBar.GetComponent<Slider>().maxValue = maxExp;
+        commandInvoker = GetComponent<CommandInvoker>();
     }
     void Update()
     {
-        //Player movement
         horizontalInput = Input.GetAxis("Horizontal");
         verticalInput = Input.GetAxis("Vertical");
-        transform.Translate(speed * Time.deltaTime * verticalInput * Vector3.forward);
-        transform.Translate(speed * Time.deltaTime * horizontalInput * Vector3.right);
-
+        Movement(horizontalInput, verticalInput, transform);
         //Movement boundary
         Zbound();
         Xbound();
@@ -39,21 +51,12 @@ public class PlayerController : MonoBehaviour
 
         //Weapons management
         Weapons();
-        if (Input.GetKey(KeyCode.Space) && powerUps.changeToLaser && !powerUps.defaultWeapon &&
-       !powerUps.changeToBulletGrunt && !powerUps.changeToBulletElite && !powerUps.laserCooldown)
-        {
-            powerUps.laserActive = true;
-            powerUps.ToggleLaser();
-
-            if (!powerUps.laserCooldown && !powerUps.isCooldownActive)
-            {
-                powerUps.StartCoroutine(powerUps.LaserCooldown());
-            }
-        }
-        else
-        {
-            powerUps.laserActive = false;
-        }
+    }
+    void Movement(float horizontalInput, float verticalInput, Transform transform)
+    {
+        ICommand moveCommand = new MoveCommand(transform, speed, horizontalInput, verticalInput);
+        commandInvoker.SetMoveCommand(moveCommand);
+        commandInvoker.ExecuteMoveCommand();
     }
     void Zbound()
     {
@@ -82,21 +85,12 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.Space) && !powerUps.countdown)
         {
-            if (powerUps.defaultWeapon && !powerUps.changeToBulletGrunt && !powerUps.changeToLaser && !powerUps.changeToBulletElite)
-            {
-                powerUps.ShootDefaultWeapon(transform);
-            }
-            else if (powerUps.changeToBulletGrunt && !powerUps.defaultWeapon && !powerUps.changeToBulletElite && !powerUps.changeToLaser)
-            {
-                powerUps.ShootBulletGrunt(transform);
-            }
-            else if (powerUps.changeToBulletElite && !powerUps.defaultWeapon && !powerUps.changeToBulletGrunt && !powerUps.changeToLaser)
-            {
-                powerUps.ShootBulletElite(transform);
-            }
+            ICommand shootCommand = new ShootCommand(powerUps, transform);
+            commandInvoker.SetShootCommand(shootCommand);
+            commandInvoker.ExecuteShootCommand();
         }
 
-        if (powerUps.changeToLaser && !powerUps.defaultWeapon && !powerUps.changeToBulletGrunt && !powerUps.changeToBulletElite && !powerUps.laserCooldown)
+        if (powerUps.changeToLaser && !powerUps.laserCooldown)
         {
             if (Input.GetKey(KeyCode.Space))
             {
@@ -193,5 +187,36 @@ public class PlayerController : MonoBehaviour
         // If power absorber is active, return early to avoid further collision handling
         if (powerAbsorberActive)
             return;
+    }
+
+    public void HandleExperienceChange(int newExp)
+    {
+        currentExp += newExp;
+        Debug.Log("Current exp: " + currentExp);
+        expBar.SetExp(currentExp);
+        if (currentExp >= maxExp)
+        {
+            LevelUp();
+            maxExp += 100;
+            expBar.GetComponent<Slider>().maxValue = maxExp;
+        }
+    }
+
+    private void LevelUp()
+    {
+        minExp += 100;
+        Debug.Log("Min exp: " + minExp);
+        expBar.SetMinExp(minExp);
+        maxHealth += 10;
+        attackDamage += 3;
+        currentLvl++;
+        upgrade.UpgradeSpaceship(currentLvl);
+        lvlText.text = "LVL: " + currentLvl;
+        Debug.Log("Level Up, Lvl: " + currentLvl);
+    }
+
+    private void OnEnable()
+    {
+        ExperienceManager.OnExperienceChange += HandleExperienceChange;
     }
 }

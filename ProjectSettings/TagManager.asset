@@ -3,19 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Stars
-  - Bullet
-  - Grunt
-  - Bullet_player
-  - Elite
-  - BulletElite
-  - Bullet_Eilte
-  - Laser
-  - PowerAbsorber
-  - Player_GruntBullet
-  - Player_EliteBullet
-  - Player_Laser
+  tags: []
   layers:
   - Default
   - TransparentFX

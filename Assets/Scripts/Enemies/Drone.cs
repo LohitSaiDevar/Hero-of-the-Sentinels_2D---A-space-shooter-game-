@@ -16,7 +16,7 @@ public class Drone : MonoBehaviour
     bool laserActive;
     int currentHealth;
     [SerializeField] int laserTimer = 3;
-    private void Start()
+    private void Awake()
     {
         player = GameObject.Find("Player").GetComponent<PlayerController>();
 

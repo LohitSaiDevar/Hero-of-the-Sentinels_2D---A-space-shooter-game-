@@ -14,15 +14,18 @@ public class Enemy : MonoBehaviour
     [SerializeField] int maxHealth = 15;
     int currentHealth;
     [SerializeField] int points;
+    [SerializeField] int expPoints;
 
     PlayerController player;
-    void Start()
+    ExperienceManager expManager;
+    void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         player = GameObject.Find("Player").GetComponent<PlayerController>();
         StartCoroutine(SpawnBulletRepeat());
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
+        expManager = GameObject.Find("ExperienceManager").GetComponent<ExperienceManager>();
     }
     private void Update()
     {
@@ -37,21 +40,15 @@ public class Enemy : MonoBehaviour
 
     IEnumerator SpawnBulletRepeat()
     {
-        float currentTotalTime = 1;
-        float currentTime = spawnBulletTime;
-        while (currentTotalTime > 0)
+        while (true)
         {
-            currentTotalTime -= Time.deltaTime;
-            currentTime -= Time.deltaTime;
-            if (currentTime <= 0)
+            for (int i = 0; i < 3; i++)
             {
                 SpawnBullets();
-                currentTime = spawnBulletTime;
+                yield return new WaitForSeconds(spawnBulletTime);
             }
-            yield return null;
+            yield return new WaitForSeconds(spawnBreakTime);
         }
-        yield return new WaitForSeconds(spawnBreakTime);
-        StartCoroutine(SpawnBulletRepeat());
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -65,9 +62,16 @@ public class Enemy : MonoBehaviour
             {
                 Destroy(gameObject);
                 if (gameObject.CompareTag("Grunt"))
+                {
                     gameManager.SpawnEnemyGrunt();
+                    expManager.AddExperience(expPoints);
+                }  
                 else if (gameObject.CompareTag("Elite"))
+                {
                     gameManager.SpawnEliteGrunt();
+                    Debug.Log("Wave 1 completed!");
+                    expManager.AddExperience(expPoints);
+                }
                 gameManager.UpdateScore(points);
             }
         }

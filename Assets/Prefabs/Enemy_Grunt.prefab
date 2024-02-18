@@ -229,9 +229,9 @@ MonoBehaviour:
   spawnBulletTime: 0.3
   spawnBreakTime: 1.5
   healthBar: {fileID: 4973121227857444773}
-  maxHealth: 15
+  maxHealth: 30
   points: 5
-  player: {fileID: 8758173517483732760, guid: dba83220a7505e141853d29268e2cae5, type: 3}
+  expPoints: 10
 --- !u!65 &4137026257586795849
 BoxCollider:
   m_ObjectHideFlags: 0
