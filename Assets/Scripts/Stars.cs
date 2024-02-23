@@ -20,7 +20,6 @@ public class Stars : MonoBehaviour
             Destroy(gameObject);
             starsSpawned = false;
         }
-        Debug.Log("Position: " + transform.position.z);
         if (transform.position.z < -10.6f && !starsSpawned)
         {
             gameManager.SpawnStars();

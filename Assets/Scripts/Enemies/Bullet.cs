@@ -3,7 +3,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
-    bool powerAbsorbed;
+
     // Update is called once per frame
     void Update()
     {

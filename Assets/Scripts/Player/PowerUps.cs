@@ -18,9 +18,7 @@ public class PowerUps : MonoBehaviour
     public bool laserCooldown;
     int laserCDMaxTime = 5;
     public bool isCooldownActive = false;
-
     [SerializeField] CooldownBar laserCDBar;
-
 
     public bool changeToBulletGrunt, changeToBulletElite, changeToLaser, defaultWeapon;
 

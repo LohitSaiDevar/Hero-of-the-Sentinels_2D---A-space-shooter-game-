@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Diagnostics.Contracts;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,12 +5,14 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+
     [SerializeField] GameObject starsPrefab, enemyGruntPrefab, eliteGruntPrefab, dronePrefab, bossPrefab;
 
     [SerializeField] TextMeshProUGUI scoreText;
     int score = 0;
-
+    int highScore;
     [SerializeField] TextMeshProUGUI finalScoreText;
+    [SerializeField] TextMeshProUGUI highScoreText;
 
     [SerializeField] TextMeshProUGUI gameOverText;
     [SerializeField] Button homeButton;
@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameObject pauseMenuUI;
 
+    [SerializeField] GameObject mainMenuUI;
+    [SerializeField] GameObject howToPlayMenuUI;
+
     public TextMeshProUGUI titleText; // Reference to the TextMeshPro component
     public float transitionDuration = 0.5f; // Duration of the color transition in seconds
 
@@ -31,13 +34,38 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject bossUI;
 
     public static bool IsGamePaused = false;
+
+    public bool keyboardOnly;
+    public bool keyboardAndMouse;
+    public bool mouseOnly;
+    [SerializeField] TextMeshProUGUI controls;
+    [SerializeField] GameObject controlsUI;
+
+    //To check if Gameobject controlsUI is active or not
+    bool controlsUIActive;
+    [SerializeField] GameObject paExplanationUI;
+    [SerializeField] GameObject paExplanationButton;
+
+    bool paExplanationUIActive;
+
     bool starsSpawned;
 
+    [SerializeField] AudioClip gameOverSound;
+    AudioSource audioSource;
+
+    [SerializeField] GameObject player;
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         SpawnEnemyGrunt();
-    }
+        SpawnEnemyGrunt();
+        SpawnEnemyGrunt();
+        SpawnEnemyGrunt();
+        SpawnEnemyGrunt();
 
+        LoadControlLayout();
+        
+    }
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -51,11 +79,9 @@ public class GameManager : MonoBehaviour
                 Pause();
             }
         }
-        Debug.Log("Position: " + starsPrefab.transform.position.z);
         if (starsPrefab.transform.position.z < -10.6f && !starsSpawned)
         {
             SpawnStars();
-            Debug.Log("Stars Spawned!");
             starsSpawned = true; // Set the flag to true to indicate that stars have been spawned
         }
     }
@@ -103,48 +129,33 @@ public class GameManager : MonoBehaviour
         Instantiate(bossPrefab, spawnBossPos, Quaternion.Euler(0, 180, 0));
     }
 
-    IEnumerator TransitionGradientColors()
-    {
-        while (true)
-        {
-            // Randomize the four corner gradient colors
-            Color targetTopLeftColor = RandomColor();
-            Color targetTopRightColor = RandomColor();
-            Color targetBottomLeftColor = RandomColor();
-            Color targetBottomRightColor = RandomColor();
-
-            float elapsedTime = 0f;
-
-            while (elapsedTime < transitionDuration)
-            {
-                // Interpolate between the current colors and the target colors
-                float t = elapsedTime / transitionDuration;
-                Color interpolatedTopLeftColor = Color.Lerp(titleText.colorGradient.topLeft, targetTopLeftColor, t);
-                Color interpolatedTopRightColor = Color.Lerp(titleText.colorGradient.topRight, targetTopRightColor, t);
-                Color interpolatedBottomLeftColor = Color.Lerp(titleText.colorGradient.bottomLeft, targetBottomLeftColor, t);
-                Color interpolatedBottomRightColor = Color.Lerp(titleText.colorGradient.bottomRight, targetBottomRightColor, t);
-
-                // Apply the interpolated colors to the four corner gradient
-                titleText.colorGradient = new VertexGradient(
-                    interpolatedTopLeftColor,
-                    interpolatedTopRightColor,
-                    interpolatedBottomLeftColor,
-                    interpolatedBottomRightColor
-                );
-                yield return null;
-                // Update elapsed time
-                elapsedTime += Time.deltaTime;
-            }
-        }
-    }
+    
     public void StartGame()
     {
         SceneManager.LoadScene(1);
+    }
+
+    public void SettingsMenu()
+    {
+        SceneManager.LoadScene(2);
+    }
+
+    public void HowToPlayMenu()
+    {
+        mainMenuUI.SetActive(false);
+        howToPlayMenuUI.SetActive(true);
+        player.SetActive(false);
     }
     public void ReturnMainMenu()
     {
         SceneManager.LoadScene(0);
         Time.timeScale = 1;
+    }
+    public void HowToPlayReturnMainMenu()
+    {
+        howToPlayMenuUI.SetActive(false);
+        mainMenuUI.SetActive(true);
+        player.SetActive(true);
     }
     public void RestartGame()
     {
@@ -185,8 +196,11 @@ public class GameManager : MonoBehaviour
             {
                 SpawnEliteGrunt();
             }
+            else if (score == 400)
+            {
+                SpawnDrone();
+            }
         }
-        finalScoreText.text = "Final Score: " + score;
     }
     public void GameOver()
     {
@@ -194,11 +208,98 @@ public class GameManager : MonoBehaviour
         restartButton.gameObject.SetActive(true);
         homeButton.gameObject.SetActive(true);
         scoreText.gameObject.SetActive(false);
+
+        finalScoreText.text = "Score: " + score;
         finalScoreText.gameObject.SetActive(true);
+
+        LoadHighScore();
+        if (score > highScore)
+        {
+            highScore = score;
+            SaveHighScore(highScore);
+        }
+        highScoreText.text = "High Score: " + highScore;
+        highScoreText.gameObject.SetActive(true);
+        audioSource.PlayOneShot(gameOverSound, 0.3f);
     }
-    Color RandomColor()
+
+    public void SetKeyboardOnly()
     {
-        // Generate a random color
-        return new Color(Random.value, Random.value, Random.value);
+        keyboardOnly = true;
+        keyboardAndMouse = false;
+        mouseOnly = false;
+        controls.text = ": Keyboard Only";
+        SaveControlLayout(": Keyboard Only");
+    }
+
+    public void SetKeyboardAndMouse()
+    {
+        keyboardAndMouse = true;
+        mouseOnly = false;
+        keyboardOnly = false;
+        controls.text = ": Keyboard & Mouse";
+        SaveControlLayout(": Keyboard & Mouse");
+    }
+
+    public void SetMouseOnly()
+    {
+        mouseOnly = true;
+        keyboardAndMouse = false; 
+        keyboardOnly = false;
+        controls.text = ": Mouse Only";
+        SaveControlLayout(": Mouse Only");
+    }
+
+    public void OpenControlsPanel()
+    {
+        if (!controlsUIActive)
+        {
+            controlsUIActive = true;
+            controlsUI.SetActive(controlsUIActive);
+            paExplanationUI.SetActive(false);
+            paExplanationButton.SetActive(!controlsUIActive);
+        }
+        else
+        {
+            controlsUIActive = false;
+            controlsUI.SetActive(controlsUIActive);
+            paExplanationButton.SetActive(!controlsUIActive);
+        }
+    }
+    public void OpenPAInstructionsPanel()
+    {
+        if (!paExplanationUIActive)
+        {
+            paExplanationUIActive = true;
+            paExplanationUI.SetActive(paExplanationUIActive);
+            controlsUI.SetActive(false);
+        }
+        else
+        {
+            paExplanationUIActive = false;
+            paExplanationUI.SetActive(paExplanationUIActive);
+        }
+    }
+    void SaveControlLayout(string layout)
+    {
+        PlayerPrefs.SetString("ControlLayout", layout);
+    }
+
+    // Load the last selected control layout from PlayerPrefs
+    void LoadControlLayout()
+    {
+        string layout = PlayerPrefs.GetString("ControlLayout", "Keyboard Only"); // Default to "Keyboard Only" if not found
+        controls.text = layout;
+    }
+    void SaveHighScore(int highScore)
+    {
+        PlayerPrefs.SetInt("HighScore", highScore);
+        PlayerPrefs.Save();
+    }
+
+    void LoadHighScore()
+    {
+        int savedHighScore = PlayerPrefs.GetInt("HighScore", 0);
+        highScore = savedHighScore;
     }
 }

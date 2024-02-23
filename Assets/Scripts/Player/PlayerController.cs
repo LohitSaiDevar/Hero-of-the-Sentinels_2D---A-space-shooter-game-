@@ -5,10 +5,14 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour
 {
     public float speed;
+    Rigidbody rb;
+
+    private bool isShooting;
 
     [SerializeField] HealthBar_Player healthBar;
     [SerializeField] int maxHealth = 20;
-    int currentHealth, currentExp = 0, minExp = 0, maxExp = 100;
+    int currentExp = 0, minExp = 0, maxExp = 100;
+    public int currentHealth;
     public int attackDamage;
 
     GameManager gameManager;
@@ -25,8 +29,16 @@ public class PlayerController : MonoBehaviour
     float horizontalInput;
     float verticalInput;
 
+    [SerializeField] ParticleSystem explosion;
+
+    [SerializeField] AudioClip bulletSound;
+    [SerializeField] AudioClip explosionSound;
+    [SerializeField] AudioClip damageSound;
+    AudioSource audioSource;
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        rb = GetComponent<Rigidbody>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
@@ -39,9 +51,6 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        verticalInput = Input.GetAxis("Vertical");
-        Movement(horizontalInput, verticalInput, transform);
         //Movement boundary
         Zbound();
         Xbound();
@@ -52,11 +61,26 @@ public class PlayerController : MonoBehaviour
         //Weapons management
         Weapons();
     }
-    void Movement(float horizontalInput, float verticalInput, Transform transform)
+    private void FixedUpdate()
     {
-        ICommand moveCommand = new MoveCommand(transform, speed, horizontalInput, verticalInput);
-        commandInvoker.SetMoveCommand(moveCommand);
-        commandInvoker.ExecuteMoveCommand();
+        Vector3 moveDirection = GetMouseDirection();
+        MouseMovement(moveDirection);
+    }
+    void KeyboardMovement(float horizontalInput, float verticalInput)
+    {
+        Vector3 movement = new(horizontalInput, 0, verticalInput);
+        movement.Normalize();
+        rb.velocity = movement * speed;
+    }
+    Vector3 GetMouseDirection()
+    {
+        Vector3 mousePos = Input.mousePosition;
+        Vector3 targetPos = Camera.main.ScreenToWorldPoint(new Vector3(mousePos.x, mousePos.y, transform.position.z));
+        return (targetPos - transform.position).normalized;
+    }
+    void MouseMovement(Vector3 moveDirection)
+    {
+        rb.velocity = moveDirection * speed;
     }
     void Zbound()
     {
@@ -83,29 +107,26 @@ public class PlayerController : MonoBehaviour
 
     void Weapons()
     {
-        if (Input.GetKey(KeyCode.Space) && !powerUps.countdown)
+        if (Input.GetMouseButtonDown(0)) // Check for initial left mouse button press
         {
+            isShooting = true; // Start shooting
+        }
+        else if (Input.GetMouseButtonUp(0)) // Check for left mouse button release
+        {
+            isShooting = false; // Stop shooting
+        }
+        if ((isShooting || Input.GetKey(KeyCode.Space)) && !powerUps.countdown)
+        {
+            audioSource.PlayOneShot(bulletSound, 0.002f);
+            audioSource.pitch = 3;
             ICommand shootCommand = new ShootCommand(powerUps, transform);
             commandInvoker.SetShootCommand(shootCommand);
             commandInvoker.ExecuteShootCommand();
         }
-
-        if (powerUps.changeToLaser && !powerUps.laserCooldown)
+        else
         {
-            if (Input.GetKey(KeyCode.Space))
-            {
-                powerUps.laserActive = true;
-                powerUps.ToggleLaser();
-
-                if (!powerUps.laserCooldown && !powerUps.isCooldownActive)
-                {
-                    powerUps.StartCoroutine(powerUps.LaserCooldown());
-                }
-            }
-            else
-            {
+            if (powerUps != null)
                 powerUps.laserActive = false;
-            }
         }
     }
 
@@ -131,15 +152,13 @@ public class PlayerController : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Bullet"))//When Grunt's bullet collides with player
         {
-
+            
             TakingDamage(3);
             healthBar.SetHealth(currentHealth);
-
             Destroy(collision.gameObject);
-            Debug.Log("Taking Damage");
-            Debug.Log("current Health: " + currentHealth);
             if (currentHealth <= 0)
             {
+                PlayExplosion();
                 Destroy(gameObject);
                 gameManager.GameOver();
             }
@@ -148,12 +167,10 @@ public class PlayerController : MonoBehaviour
         {
             TakingDamage(5);
             healthBar.SetHealth(currentHealth);
-
             Destroy(collision.gameObject);
-            Debug.Log("Taking Damage");
-            Debug.Log("current Health: " + currentHealth);
             if (currentHealth <= 0)
             {
+                PlayExplosion();
                 Destroy(gameObject);
                 gameManager.GameOver();
             }
@@ -162,10 +179,9 @@ public class PlayerController : MonoBehaviour
         {
             TakingDamage(maxHealth);
             healthBar.SetHealth(currentHealth);
-            Debug.Log("Taking Damage");
-            Debug.Log("current Health: " + currentHealth);
             if (currentHealth <= 0)
             {
+                PlayExplosion();
                 Destroy(gameObject);
                 gameManager.GameOver();
             }
@@ -173,20 +189,25 @@ public class PlayerController : MonoBehaviour
     }
 
     //When player takes damage, then it's health reduces.
-    void TakingDamage(int damage)
+    public void TakingDamage(int damage)
     {
         currentHealth -= damage;
+        audioSource.PlayOneShot(damageSound, 0.3f);
     }
 
     //To toggle Power Absorber On/Off
     void TogglePowerAbsorber()
     {
-        bool powerAbsorberActive = Input.GetKey(KeyCode.LeftShift);
-        powerAbsorber.SetActiveState(powerAbsorberActive);
-
-        // If power absorber is active, return early to avoid further collision handling
-        if (powerAbsorberActive)
-            return;
+        bool powerAbsorberActive = Input.GetKey(KeyCode.LeftShift) || Input.GetMouseButton(1);
+        if (powerAbsorberActive && !powerAbsorber.gameObject.activeSelf)
+        {
+            powerAbsorber.SetActiveState(true);
+        }
+        // Check if power absorber was previously active and is now inactive
+        else if (!powerAbsorberActive && powerAbsorber.gameObject.activeSelf)
+        {
+            powerAbsorber.SetActiveState(false);
+        }
     }
 
     public void HandleExperienceChange(int newExp)
@@ -218,5 +239,17 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         ExperienceManager.OnExperienceChange += HandleExperienceChange;
+    }
+
+    public void SetHealth(int currentHealth)
+    {
+        healthBar.SetHealth(currentHealth);
+    }
+
+    void PlayExplosion()
+    {
+        ParticleSystem explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
+        explosionInstance.GetComponent<ParticleSystem>().Play();
+        explosionInstance.GetComponent<AudioSource>().PlayOneShot(explosionSound, 0.3f);
     }
 }
