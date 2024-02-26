@@ -192,7 +192,7 @@ public class PlayerController : MonoBehaviour
     public void TakingDamage(int damage)
     {
         currentHealth -= damage;
-        audioSource.PlayOneShot(damageSound, 0.3f);
+        audioSource.PlayOneShot(damageSound, 0.1f);
     }
 
     //To toggle Power Absorber On/Off

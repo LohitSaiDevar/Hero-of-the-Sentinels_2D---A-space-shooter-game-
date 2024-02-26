@@ -667,10 +667,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Stars Small_1
       objectReference: {fileID: 0}
-    - target: {fileID: 1244985102137685007, guid: ad22216b134627449bc82cd25214d90b, type: 3}
-      propertyPath: gameManager
-      value: 
-      objectReference: {fileID: 593023955}
     - target: {fileID: 5799135916230916452, guid: ad22216b134627449bc82cd25214d90b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -966,6 +962,7 @@ MonoBehaviour:
   controlsUI: {fileID: 0}
   paExplanationUI: {fileID: 0}
   paExplanationButton: {fileID: 0}
+  starsSpawned: 0
   gameOverSound: {fileID: 8300000, guid: ca04c54604216194baa3e33b09bdcaca, type: 3}
   player: {fileID: 0}
 --- !u!82 &593023956

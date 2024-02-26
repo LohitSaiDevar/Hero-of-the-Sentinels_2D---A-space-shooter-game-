@@ -102,7 +102,7 @@ public class Enemy : MonoBehaviour
         }
         else if (gameObject.CompareTag("Elite"))
         {
-            if (Mathf.Abs(transform.position.x - player.transform.position.x) > 2)
+            if (Mathf.Abs(transform.position.x - player.transform.position.x) > 0)
             {
                 if (transform.position.x < player.transform.position.x)
                 {
@@ -132,7 +132,14 @@ public class Enemy : MonoBehaviour
         // Instantiate the explosion effect prefab at the position of the enemy
         ParticleSystem explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
         explosionInstance.GetComponent<ParticleSystem>().Play();
-        explosionInstance.GetComponent<AudioSource>().PlayOneShot(explosionSound, 0.3f);
+        if (explosionInstance.GetComponent<AudioSource>() != null)
+        {
+            explosionInstance.GetComponent<AudioSource>().PlayOneShot(explosionSound, 0.3f);
+        }
+        else
+        {
+            Debug.Log("Audio Source is missing!");
+        }
         Destroy(gameObject);
         if (gameObject.CompareTag("Grunt"))
         {

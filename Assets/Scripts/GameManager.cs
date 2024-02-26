@@ -34,6 +34,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject bossUI;
 
     public static bool IsGamePaused = false;
+    //public static bool HasGameStarted = false;
 
     public bool keyboardOnly;
     public bool keyboardAndMouse;
@@ -48,12 +49,13 @@ public class GameManager : MonoBehaviour
 
     bool paExplanationUIActive;
 
-    bool starsSpawned;
+    public bool starsSpawned;
 
     [SerializeField] AudioClip gameOverSound;
     AudioSource audioSource;
 
     [SerializeField] GameObject player;
+    bool droneSpawned;
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
@@ -78,11 +80,6 @@ public class GameManager : MonoBehaviour
             {
                 Pause();
             }
-        }
-        if (starsPrefab.transform.position.z < -10.6f && !starsSpawned)
-        {
-            SpawnStars();
-            starsSpawned = true; // Set the flag to true to indicate that stars have been spawned
         }
     }
 
@@ -182,23 +179,37 @@ public class GameManager : MonoBehaviour
         scoreText.text = "Score: " + score;
 
         //Wave 1
-        if (!BossReady)
+        if (!droneSpawned && (score > 100 && score < 190))
         {
-            if (score == 10)
+            SpawnDrone();
+            droneSpawned = true; // Set the flag to true to indicate that the drone has been spawned
+        }
+        else if (droneSpawned && (score > 200 && score < 290))
+        {
+            droneSpawned = false;
+        }
+        else if (!droneSpawned && score > 300)
+        {
+            SpawnDrone();
+            droneSpawned = true;
+        }
+        else
+        {
+            // Continue with the existing logic for spawning enemies based on score
+            if (!BossReady)
             {
-                SpawnEnemyGrunt();
-            }
-            else if (score == 30)
-            {
-                SpawnEnemyGrunt();
-            }
-            else if (score == 50)
-            {
-                SpawnEliteGrunt();
-            }
-            else if (score == 400)
-            {
-                SpawnDrone();
+                if (score == 10)
+                {
+                    SpawnEnemyGrunt();
+                }
+                else if (score == 30)
+                {
+                    SpawnEnemyGrunt();
+                }
+                else if (score == 50)
+                {
+                    SpawnEliteGrunt();
+                }
             }
         }
     }

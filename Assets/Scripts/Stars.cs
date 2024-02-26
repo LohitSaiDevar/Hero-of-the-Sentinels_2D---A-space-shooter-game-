@@ -6,8 +6,6 @@ public class Stars : MonoBehaviour
     GameManager gameManager;
     // Update is called once per frame
 
-    bool starsSpawned = false;
-
     private void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -15,16 +13,16 @@ public class Stars : MonoBehaviour
     void Update()
     {
         transform.Translate(moveSpeed * Time.deltaTime * Vector3.down);
-        if (transform.position.z < -40)
+        if (this.transform.position.z < -40)
         {
             Destroy(gameObject);
-            starsSpawned = false;
+            gameManager.starsSpawned = false;
         }
-        if (transform.position.z < -10.6f && !starsSpawned)
+        if (this.transform.position.z < -10.6f && !gameManager.starsSpawned)
         {
             gameManager.SpawnStars();
             Debug.Log("Stars Spawned!");
-            starsSpawned = true;
+            gameManager.starsSpawned = true;
         }
     }
 }

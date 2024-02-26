@@ -61,28 +61,36 @@ public class Drone : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Bullet_player"))
         {
-            TakingDamage(player.attackDamage);
-            healthBar.SetHealth(currentHealth);
             Destroy(collision.gameObject);
-            Debug.Log("Current Drone Health: " + currentHealth);
-            if (currentHealth <= 0)
-            {
-                Destroy(gameObject);
-            }
+            HandleCollisionDamage(player.attackDamage, gameObject);
         }
         else if (collision.gameObject.CompareTag("Player_Laser"))
         {
-            TakingDamage(6);
-            healthBar.SetHealth(currentHealth);
-            Debug.Log("Current Drone Health: " + currentHealth);
-            if (currentHealth <= 0)
-            {
-                Destroy(gameObject);
-            }
+            HandleCollisionDamage(player.attackDamage + 30, gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Player_GruntBullet"))
+        {
+            HandleCollisionDamage(player.attackDamage + 2, gameObject);
+            Destroy(collision.gameObject);
+        }
+        else if (collision.gameObject.CompareTag("Player_EliteBullet"))
+        {
+            HandleCollisionDamage(player.attackDamage + 4, gameObject);
+            Destroy(collision.gameObject);
         }
     }
     void TakingDamage(int damage)
     {
         currentHealth -= damage;
+    }
+
+    void HandleCollisionDamage(int damage, GameObject gameObject)
+    {
+        TakingDamage(damage);
+        healthBar.SetHealth(currentHealth);
+        if (currentHealth <= 0)
+        {
+            Destroy(gameObject);
+        }
     }
 }
