@@ -6,7 +6,7 @@ public class Bullet : MonoBehaviour
     PlayerController player;
     GameManager gameManager;
     [SerializeField] int damage;
-
+    PowerUps powerUps;
     private void Awake()
     {
         GameObject playerObject = GameObject.Find("Player");
@@ -28,6 +28,8 @@ public class Bullet : MonoBehaviour
         {
             Debug.LogError("GameManager GameObject not found!");
         }
+        powerUps = playerObject.GetComponent<PowerUps>();
+        
     }
     // Update is called once per frame
     void Update()
@@ -55,6 +57,21 @@ public class Bullet : MonoBehaviour
                     gameManager.GameOver();
                 }
             }
+        }
+        else if (other.gameObject.CompareTag("PowerAbsorber"))
+        {
+            if (gameObject.CompareTag("Bullet"))
+            {
+                Debug.Log("Changed to GruntBullet");
+                powerUps.BulletGruntActive();
+                Destroy(this.gameObject);
+            }
+            else if (gameObject.CompareTag("BulletElite"))
+            {
+                Debug.Log("Changed to elite");
+                powerUps.BulletEliteActive();
+                Destroy(this.gameObject);
+            }   
         }
     }
 }

@@ -130,27 +130,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (powerAbsorber.gameObject.activeSelf)//When bullets/laser from the enemies collide on Player's power absorber
-        {
-            Destroy(collision.gameObject);
-            if (collision.gameObject.CompareTag("Bullet"))
-            {
-                powerUps.BulletGruntActive();
-            }
-            else if (collision.gameObject.CompareTag("BulletElite"))
-            {
-                powerUps.BulletEliteActive();
-            }
-            else if (collision.gameObject.CompareTag("Laser"))
-            {
-                powerUps.LaserActive();
-            }
-            return;
-        }
-    }
-
     //When player takes damage, then it's health reduces.
     public void TakingDamage(int damage)
     {

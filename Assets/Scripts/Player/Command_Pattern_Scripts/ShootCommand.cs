@@ -14,18 +14,25 @@ public class ShootCommand : ICommand
     {
         if (powerUps.defaultWeapon)
         {
+            Debug.Log("Default Weapon: " + powerUps.defaultWeapon);
             powerUps.ShootDefaultWeapon(transform);
         }
         else if (powerUps.changeToBulletGrunt)
         {
+            Debug.Log("Default Weapon: " + powerUps.defaultWeapon);
+            Debug.Log("Default Weapon: " + powerUps.changeToBulletGrunt);
             powerUps.ShootBulletGrunt(transform);
         }
         else if (powerUps.changeToBulletElite)
         {
+            Debug.Log("Default Weapon: " + powerUps.defaultWeapon);
+            Debug.Log("Default Weapon: " + powerUps.changeToBulletElite);
             powerUps.ShootBulletElite(transform);
         }
         else if (powerUps.changeToLaser && !powerUps.laserCooldown)
         {
+            Debug.Log("Default Weapon: " + powerUps.defaultWeapon);
+            Debug.Log("Default Weapon: " + powerUps.changeToLaser);
             powerUps.laserActive = true;
             powerUps.ToggleLaser();
 
