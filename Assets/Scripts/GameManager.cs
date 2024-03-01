@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,6 +8,7 @@ public class GameManager : MonoBehaviour
 {
 
     [SerializeField] GameObject starsPrefab, enemyGruntPrefab, eliteGruntPrefab, dronePrefab, bossPrefab;
+    [SerializeField] GameObject warningTextUI;
 
     [SerializeField] TextMeshProUGUI scoreText;
     int score = 0;
@@ -30,7 +32,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI titleText; // Reference to the TextMeshPro component
     public float transitionDuration = 0.5f; // Duration of the color transition in seconds
 
-    public static bool BossReady = false;
+    public bool bossReady = false;
     [SerializeField] GameObject bossUI;
 
     public static bool IsGamePaused = false;
@@ -52,12 +54,17 @@ public class GameManager : MonoBehaviour
     public bool starsSpawned;
 
     [SerializeField] AudioClip gameOverSound;
+    [SerializeField] AudioClip bossMusic;
+    [SerializeField] AudioClip warningSound;
     AudioSource audioSource;
 
     [SerializeField] GameObject player;
+    [SerializeField] GameObject mainCamera;
+    AudioSource mainAudioSource;
     bool droneSpawned;
     void Start()
     {
+        mainAudioSource = mainCamera.GetComponent<AudioSource>();
         audioSource = GetComponent<AudioSource>();
         SpawnEnemyGrunt();
         SpawnEnemyGrunt();
@@ -80,6 +87,10 @@ public class GameManager : MonoBehaviour
             {
                 Pause();
             }
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            StartCoroutine(BossArrives());
         }
     }
 
@@ -122,11 +133,41 @@ public class GameManager : MonoBehaviour
 
     public void SpawnBoss()
     {
+        bossUI.SetActive(true);
+        mainAudioSource.PlayOneShot(bossMusic, 0.5f);
         Vector3 spawnBossPos = new(0, 3, 22);
         Instantiate(bossPrefab, spawnBossPos, Quaternion.Euler(0, 180, 0));
     }
 
-    
+    IEnumerator BossArrives()
+    {
+        bossReady = true;
+        int count = 5;
+        mainAudioSource.PlayOneShot(warningSound, 0.3f);
+        while (count > 0)
+        {
+            warningTextUI.SetActive(true);
+            yield return new WaitForSeconds(1);
+            count--;
+        }
+        warningTextUI.SetActive(false);
+        yield return StartCoroutine(SpawnBossAsync());
+    }
+
+    IEnumerator SpawnBossAsync()
+    {
+        // Start a custom profiler marker
+        UnityEngine.Profiling.Profiler.BeginSample("SpawnBoss");
+
+        // Spawn the boss asynchronously
+        SpawnBoss();
+
+        // End the custom profiler marker
+        UnityEngine.Profiling.Profiler.EndSample();
+
+        // Wait until the next frame before continuing
+        yield return null;
+    }
     public void StartGame()
     {
         SceneManager.LoadScene(1);
@@ -147,6 +188,8 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(0);
         Time.timeScale = 1;
+        bossReady = false;
+        mainAudioSource.Stop();
     }
     public void HowToPlayReturnMainMenu()
     {
@@ -158,6 +201,7 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         Time.timeScale = 1;
+        bossReady = false;
     }
 
     void Resume()
@@ -179,25 +223,25 @@ public class GameManager : MonoBehaviour
         scoreText.text = "Score: " + score;
 
         //Wave 1
-        if (!droneSpawned && (score > 100 && score < 190))
+        if (!bossReady)
         {
-            SpawnDrone();
-            droneSpawned = true; // Set the flag to true to indicate that the drone has been spawned
-        }
-        else if (droneSpawned && (score > 200 && score < 290))
-        {
-            droneSpawned = false;
-        }
-        else if (!droneSpawned && score > 300)
-        {
-            SpawnDrone();
-            droneSpawned = true;
-        }
-        else
-        {
-            // Continue with the existing logic for spawning enemies based on score
-            if (!BossReady)
+            if (!droneSpawned && (score > 100 && score < 190))
             {
+                SpawnDrone();
+                droneSpawned = true; // Set the flag to true to indicate that the drone has been spawned
+            }
+            else if (droneSpawned && (score > 200 && score < 290))
+            {
+                droneSpawned = false;
+            }
+            else if (!droneSpawned && score > 300)
+            {
+                SpawnDrone();
+                droneSpawned = true;
+            }
+            else
+            {
+                // Continue with the existing logic for spawning enemies based on score
                 if (score == 10)
                 {
                     SpawnEnemyGrunt();
@@ -232,6 +276,8 @@ public class GameManager : MonoBehaviour
         highScoreText.text = "High Score: " + highScore;
         highScoreText.gameObject.SetActive(true);
         audioSource.PlayOneShot(gameOverSound, 0.3f);
+        bossReady = false;
+        mainAudioSource.Stop();
     }
 
     public void SetKeyboardOnly()

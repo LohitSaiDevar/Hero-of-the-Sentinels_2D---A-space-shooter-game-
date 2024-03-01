@@ -6,6 +6,7 @@ public class ExperienceBar : MonoBehaviour
     [SerializeField] Slider slider;
     [SerializeField] Color color;
     [SerializeField] Image fill;
+
     void Start()
     {
         slider = GetComponent<Slider>();
@@ -15,11 +16,19 @@ public class ExperienceBar : MonoBehaviour
     {
         slider.minValue = exp;
         slider.value = exp;
-        fill.color = Color.clear;
+        if (fill != null)
+        {
+            fill.color = Color.clear;
+        }
     }
+
     public void SetExp(int exp)
     {
         slider.value = exp;
-        fill.color = Color.yellow;
+        if (fill != null)
+        {
+            fill.color = Color.yellow;
+        }
     }
 }
+

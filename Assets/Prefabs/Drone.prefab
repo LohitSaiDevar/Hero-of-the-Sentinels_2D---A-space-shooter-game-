@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2063583759886743784}
   - component: {fileID: 2272173395282315310}
   - component: {fileID: 2005176364479249901}
+  - component: {fileID: 118893155933580228}
   m_Layer: 0
   m_Name: Laser (2)
   m_TagString: Laser
@@ -76,12 +77,24 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.34, y: 1, z: 57.634254}
   m_Center: {x: 0, y: 0, z: 19.74213}
+--- !u!114 &118893155933580228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834022567462749488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31629373102751246888f26856a02c1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &856616716777484360
 GameObject:
   m_ObjectHideFlags: 0
@@ -93,6 +106,7 @@ GameObject:
   - component: {fileID: 5652770106756769471}
   - component: {fileID: 8349659548848288156}
   - component: {fileID: 6288992551920149486}
+  - component: {fileID: 7562620177560392307}
   m_Layer: 0
   m_Name: Laser (1)
   m_TagString: Laser
@@ -158,12 +172,24 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.3, y: 1, z: 57.576797}
   m_Center: {x: 0, y: 0, z: 19.728394}
+--- !u!114 &7562620177560392307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 856616716777484360}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31629373102751246888f26856a02c1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &886983544154670593
 GameObject:
   m_ObjectHideFlags: 0
@@ -441,7 +467,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4599630099275918448
 Transform:
   m_ObjectHideFlags: 0
@@ -472,6 +498,7 @@ GameObject:
   - component: {fileID: 5057970150124900400}
   - component: {fileID: 4831729474518000881}
   - component: {fileID: 5277585979864854971}
+  - component: {fileID: 3705277260644331670}
   m_Layer: 0
   m_Name: Laser (3)
   m_TagString: Laser
@@ -537,12 +564,24 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 0.46, y: 1, z: 57.93251}
   m_Center: {x: -5.139026e-14, y: 0, z: 19.616264}
+--- !u!114 &3705277260644331670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3790546464948580228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31629373102751246888f26856a02c1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4615193953021951998
 GameObject:
   m_ObjectHideFlags: 0
@@ -956,6 +995,7 @@ GameObject:
   - component: {fileID: 4219719283866416601}
   - component: {fileID: 5315359354707403332}
   - component: {fileID: 1120976399548971469}
+  - component: {fileID: 459518534603855946}
   m_Layer: 0
   m_Name: Laser
   m_TagString: Laser
@@ -994,7 +1034,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -1027,6 +1067,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &459518534603855946
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5560924274628589161}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31629373102751246888f26856a02c1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8540119640033525322
 GameObject:
   m_ObjectHideFlags: 0

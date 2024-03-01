@@ -29,11 +29,18 @@ public class Enemy : MonoBehaviour
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
 
-        StartCoroutine(SpawnBulletRepeat());
+        if (gameObject != null)
+        {
+            StartCoroutine(SpawnBulletRepeat());
+        }
     }
     private void FixedUpdate()
     {
-        Movement();
+        GruntMovement();
+    }
+    private void LateUpdate()
+    {
+        EliteMovement();
     }
     void SpawnBullets()
     {
@@ -83,7 +90,7 @@ public class Enemy : MonoBehaviour
         currentHealth -= damage;
     }
 
-    void Movement()
+    void GruntMovement()
     {
         if (gameObject.CompareTag("Grunt"))
         {
@@ -98,9 +105,15 @@ public class Enemy : MonoBehaviour
                 // Change direction to move left
                 moveSpeed = -Mathf.Abs(moveSpeed);
             }
-
         }
-        else if (gameObject.CompareTag("Elite"))
+        else
+        {
+            return;
+        }
+    }
+    void EliteMovement()
+    {
+        if (gameObject.CompareTag("Elite"))
         {
             if (Mathf.Abs(transform.position.x - player.transform.position.x) > 0)
             {
@@ -113,6 +126,10 @@ public class Enemy : MonoBehaviour
                     transform.Translate(moveSpeed * Time.deltaTime * Vector3.right);
                 }
             }
+        }
+        else
+        {
+            return;
         }
     }
 
@@ -143,12 +160,18 @@ public class Enemy : MonoBehaviour
         Destroy(gameObject);
         if (gameObject.CompareTag("Grunt"))
         {
-            gameManager.SpawnEnemyGrunt();
-            expManager.AddExperience(expPoints);   
+            if (!gameManager.bossReady)
+            {
+                gameManager.SpawnEnemyGrunt();
+            }
+            expManager.AddExperience(expPoints);
         }
         else if (gameObject.CompareTag("Elite"))
         {
-            gameManager.SpawnEliteGrunt();
+            if (!gameManager.bossReady)
+            {
+                gameManager.SpawnEliteGrunt();
+            }
             Debug.Log("Wave 1 completed!");
             expManager.AddExperience(expPoints);
         }

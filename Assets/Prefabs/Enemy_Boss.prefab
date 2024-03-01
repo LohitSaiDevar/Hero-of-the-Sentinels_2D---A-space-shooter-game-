@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 793838467645683242}
-  - component: {fileID: 8135401164802209420}
   - component: {fileID: 4343669650855665612}
+  - component: {fileID: 4758440342114488630}
+  - component: {fileID: 7356627885610801537}
   m_Layer: 0
   m_Name: Enemy_Boss
   m_TagString: Untagged
@@ -34,8 +35,49 @@ Transform:
   - {fileID: 6656254279911226296}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!65 &8135401164802209420
-BoxCollider:
+--- !u!114 &4343669650855665612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4857768026350929519}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56b2b0fd1a4c1214b92e9c4fdbf36da9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 5
+  bulletPrefab: {fileID: 5706782386932840080, guid: 9365b16a5f5c4e74380440e73c2e3a89, type: 3}
+  spawnBulletTime: 0.3
+  spawnBreakTime: 1.5
+  maxHealth: 2000
+  points: 1000
+  explosionSound: {fileID: 8300000, guid: 70f759677fac5984aa55f26aeeff5978, type: 3}
+  explosion: {fileID: 8038344524183138615, guid: 0277167a12290af47801444830a2be97, type: 3}
+--- !u!95 &4758440342114488630
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4857768026350929519}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d4cc338413519c944a4f854d46ac99a1, type: 2}
+  m_CullingMode: 1
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
+--- !u!135 &7356627885610801537
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -53,27 +95,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.4798748, y: 1, z: 3.3746588}
-  m_Center: {x: -0.006801009, y: 0, z: -0.07395446}
---- !u!114 &4343669650855665612
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4857768026350929519}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 56b2b0fd1a4c1214b92e9c4fdbf36da9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 5
-  bulletPrefab: {fileID: 5706782386932840080, guid: 9365b16a5f5c4e74380440e73c2e3a89, type: 3}
-  spawnBulletTime: 0.3
-  spawnBreakTime: 1.5
-  healthBar: {fileID: 0}
-  maxHealth: 300
-  points: 1000
+  m_Radius: 1.7
+  m_Center: {x: 0, y: 0, z: -0.08}
 --- !u!1 &7406072114507062491
 GameObject:
   m_ObjectHideFlags: 0

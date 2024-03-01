@@ -9,7 +9,7 @@ public class PlayerController : MonoBehaviour
 
     private bool isShooting;
 
-    [SerializeField] HealthBar_Player healthBar;
+    public HealthBar_Player healthBar;
     [SerializeField] int maxHealth = 20;
     int currentExp = 0, minExp = 0, maxExp = 100;
     public int currentHealth;
@@ -149,43 +149,6 @@ public class PlayerController : MonoBehaviour
             }
             return;
         }
-
-        if (collision.gameObject.CompareTag("Bullet"))//When Grunt's bullet collides with player
-        {
-            
-            TakingDamage(3);
-            healthBar.SetHealth(currentHealth);
-            Destroy(collision.gameObject);
-            if (currentHealth <= 0)
-            {
-                PlayExplosion();
-                Destroy(gameObject);
-                gameManager.GameOver();
-            }
-        }
-        else if (collision.gameObject.CompareTag("BulletElite"))//When Elite grunt's bullet collides with player
-        {
-            TakingDamage(5);
-            healthBar.SetHealth(currentHealth);
-            Destroy(collision.gameObject);
-            if (currentHealth <= 0)
-            {
-                PlayExplosion();
-                Destroy(gameObject);
-                gameManager.GameOver();
-            }
-        }
-        else if (collision.gameObject.CompareTag("Laser"))//When Drone's laser collides with the player
-        {
-            TakingDamage(maxHealth);
-            healthBar.SetHealth(currentHealth);
-            if (currentHealth <= 0)
-            {
-                PlayExplosion();
-                Destroy(gameObject);
-                gameManager.GameOver();
-            }
-        }
     }
 
     //When player takes damage, then it's health reduces.
@@ -246,7 +209,7 @@ public class PlayerController : MonoBehaviour
         healthBar.SetHealth(currentHealth);
     }
 
-    void PlayExplosion()
+    public void PlayExplosion()
     {
         ParticleSystem explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
         explosionInstance.GetComponent<ParticleSystem>().Play();
