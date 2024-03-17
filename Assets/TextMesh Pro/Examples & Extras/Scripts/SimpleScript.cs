@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 
 namespace TMPro.Examples
@@ -41,7 +42,7 @@ namespace TMPro.Examples
             //m_textMeshPro.wordSpacing = 0.1f;
 
             //m_textMeshPro.enableCulling = true;
-            m_textMeshPro.enableWordWrapping = false;
+            m_textMeshPro.textWrappingMode = TextWrappingModes.NoWrap;
 
             //textMeshPro.fontColor = new Color32(255, 255, 255, 255);
         }

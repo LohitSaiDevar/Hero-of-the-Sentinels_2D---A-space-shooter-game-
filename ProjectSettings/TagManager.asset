@@ -15,6 +15,7 @@ TagManager:
   - Player_GruntBullet
   - Player_EliteBullet
   - Bullet_Player
+  - HomingMissile
   layers:
   - Default
   - TransparentFX

@@ -56,7 +56,10 @@ public class Enemy : MonoBehaviour
         {
             for (int i = 0; i < 3; i++)
             {
-                SpawnBullets();
+                if (!gameManager.isGameOver)
+                {
+                    SpawnBullets();
+                }
                 yield return new WaitForSeconds(spawnBulletTime);
             }
             yield return new WaitForSeconds(spawnBreakTime);

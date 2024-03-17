@@ -9,13 +9,13 @@ public class HealthBar_Player : MonoBehaviour
     {
         slider = GetComponent<Slider>();
     }
-    public void SetMaxHealth(int health)
+    public void SetMaxHealth(float health)
     {
         slider.maxValue = health;
         slider.value = health;
         fill.color = gradient.Evaluate(1);
     }
-    public void SetHealth(int health)
+    public void SetHealth(float health)
     {
         slider.value = health;
         fill.color = gradient.Evaluate(slider.normalizedValue);

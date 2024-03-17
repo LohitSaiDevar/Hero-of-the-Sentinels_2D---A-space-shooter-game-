@@ -30,7 +30,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: 3, z: 17.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 6656254279911226296}
   m_Father: {fileID: 0}
@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  rotateSpeed: 5
   bulletPrefab: {fileID: 5706782386932840080, guid: 9365b16a5f5c4e74380440e73c2e3a89, type: 3}
   spawnBulletTime: 0.3
   spawnBreakTime: 1.5
@@ -55,9 +56,10 @@ MonoBehaviour:
   points: 1000
   explosionSound: {fileID: 8300000, guid: 70f759677fac5984aa55f26aeeff5978, type: 3}
   explosion: {fileID: 8038344524183138615, guid: 0277167a12290af47801444830a2be97, type: 3}
+  homingMissilePrefab: {fileID: 8427601327387002309, guid: a3cb0f727da73ab4aa11749b3fcaa469, type: 3}
 --- !u!95 &4758440342114488630
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -71,6 +73,7 @@ Animator:
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -146,6 +149,8 @@ SpriteRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

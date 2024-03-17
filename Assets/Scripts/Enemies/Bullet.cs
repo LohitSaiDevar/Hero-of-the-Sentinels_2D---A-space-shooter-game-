@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] float moveSpeed;
+    public float moveSpeed;
     PlayerController player;
     GameManager gameManager;
     [SerializeField] int damage;
@@ -35,7 +35,7 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         transform.Translate(moveSpeed * Time.deltaTime * Vector3.forward);
-        if (transform.position.z > 22 || transform.position.z < -20)
+        if (transform.position.z > 22 || transform.position.z < -20 || transform.position.x > 19 || transform.position.x < -19)
         {
             Destroy(gameObject);
         }
@@ -71,7 +71,7 @@ public class Bullet : MonoBehaviour
                 Debug.Log("Changed to elite");
                 powerUps.BulletEliteActive();
                 Destroy(this.gameObject);
-            }   
+            }
         }
     }
 }

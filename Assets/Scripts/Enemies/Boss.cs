@@ -1,22 +1,31 @@
+using System;
 using System.Collections;
+using System.Drawing;
 using UnityEngine;
 
 public class Boss : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 5;
+    [SerializeField] float rotateSpeed = 5;
 
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] float spawnBulletTime;
     [SerializeField] float spawnBreakTime;
     GameManager gameManager;
-    [SerializeField] int maxHealth = 80;
-    int currentHealth;
+    [SerializeField] float maxHealth;
+    float currentHealth;
     [SerializeField] int points;
     GameObject bossUI;
     [SerializeField] AudioClip explosionSound;
     [SerializeField] ParticleSystem explosion;
     PlayerController player;
     HealthBar_Player healthBar;
+
+    [SerializeField] GameObject homingMissilePrefab;
+    bool isMissileLaunched;
+    bool bulletSpawnedLeft;
+    bool bulletSpawnedRight;
+    float healthPercent;
     private void Awake()
     {
         bossUI = GameObject.Find("Enemy_Boss_UI");
@@ -30,30 +39,65 @@ public class Boss : MonoBehaviour
 
     private void Update()
     {
-        Movement();
+        //transform.Rotate(new Vector3(0, rotateSpeed, 0) * Time.deltaTime);
+        healthPercent = currentHealth / maxHealth;
     }
     void SpawnBullets()
     {
-        Instantiate(bulletPrefab, transform.position + new Vector3(0, 0, -2), transform.rotation);
+        float radius = 2;
+        int numberOfBullets = 16;
+        float anglePerBullet = 360 / numberOfBullets;
+        for (int i = 0; i < numberOfBullets; i++)
+        {
+            float angle = i * anglePerBullet;
+            float xPos = transform.position.x + radius * Mathf.Sin(Mathf.Deg2Rad * angle);
+            float zPos = transform.position.z + radius * Mathf.Cos(Mathf.Deg2Rad * angle);
+
+            Vector3 spawnPosition = new Vector3(xPos, 2.8f, zPos);
+            GameObject bulletInstance = Instantiate(bulletPrefab, spawnPosition, Quaternion.identity);
+            bulletInstance.transform.Rotate(0, angle, 0);
+        }
     }
 
+    void SpawnHomingBullets()
+    {
+        float radius = 2.5f;
+        if (!bulletSpawnedLeft)
+        {
+            float leftAngle = 90f;
+            float leftXPos = transform.position.x + radius * Mathf.Sin(Mathf.Deg2Rad * leftAngle);
+            float leftZPos = transform.position.z + radius * Mathf.Cos(Mathf.Deg2Rad * leftAngle);
+            Vector3 leftSpawnPosition = new Vector3(leftXPos, 2.8f, leftZPos);
+            GameObject bulletInstance = Instantiate(homingMissilePrefab, leftSpawnPosition, Quaternion.identity);
+            bulletInstance.transform.Rotate(0, leftAngle, 0);
+            bulletSpawnedLeft = true;
+        }
+
+        if (!bulletSpawnedRight)
+        {
+            float rightAngle = 270f;
+            float rightXPos = transform.position.x + radius * Mathf.Sin(Mathf.Deg2Rad * rightAngle);
+            float rightZPos = transform.position.z + radius * Mathf.Cos(Mathf.Deg2Rad * rightAngle);
+            Vector3 rightSpawnPosition = new Vector3(rightXPos, 2.8f, rightZPos);
+            GameObject bulletInstance = Instantiate(homingMissilePrefab, rightSpawnPosition, Quaternion.identity);
+            bulletInstance.transform.Rotate(0, rightAngle, 0);
+            bulletSpawnedRight = true;
+        }
+    }
     IEnumerator SpawnBulletRepeat()
     {
-        float currentTotalTime = 1;
-        float currentTime = spawnBulletTime;
-        while (currentTotalTime > 0)
+        while (true)
         {
-            currentTotalTime -= Time.deltaTime;
-            currentTime -= Time.deltaTime;
-            if (currentTime <= 0)
+            for (int i = 0; i < 3; i++)
             {
-                SpawnBullets();
-                currentTime = spawnBulletTime;
+                if (!gameManager.isGameOver)
+                {
+                    SpawnBullets();
+                }
+                yield return new WaitForSeconds(spawnBulletTime);
             }
-            yield return null;
+            yield return new WaitForSeconds(spawnBreakTime);
         }
-        yield return new WaitForSeconds(spawnBreakTime);
-        StartCoroutine(SpawnBulletRepeat());
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -74,7 +118,6 @@ public class Boss : MonoBehaviour
         {
             TakingDamage(0);
             healthBar.SetHealth(currentHealth);
-            Debug.Log("Enemy boss Health: " + currentHealth);
             if (currentHealth <= 0)
             {
                 Destroy(gameObject);
@@ -87,20 +130,13 @@ public class Boss : MonoBehaviour
         currentHealth -= damage;
     }
 
-    void Movement()
-    {
-        if (transform.position.z != 4)
-        {
-            transform.Translate(moveSpeed * Time.deltaTime * Vector3.forward);
-        }
-    }
-
     void CollisionDamage(Collision collision, int extraDmg)
     {
         TakingDamage(player.attackDamage + extraDmg);
         healthBar.SetHealth(currentHealth);
         Destroy(collision.gameObject);
-        Debug.Log("Enemy boss Health: " + currentHealth);
+        Debug.Log("Health Percent: " + healthPercent);
+
         if (currentHealth <= 0)
         {
             ParticleSystem explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
@@ -116,6 +152,13 @@ public class Boss : MonoBehaviour
             Destroy(gameObject);
             bossUI.SetActive(false);
             gameManager.UpdateScore(points);
+        }
+        else if (healthPercent <= 0.5f && healthPercent > 0.3f)
+        {
+            if (!isMissileLaunched)
+            {
+                SpawnHomingBullets();
+            }
         }
     }
 }

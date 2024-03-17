@@ -1,5 +1,5 @@
-using System.Collections;
 using UnityEngine;
+using System.Collections;
 
 
 namespace TMPro.Examples
@@ -24,7 +24,7 @@ namespace TMPro.Examples
             // Get Reference to TextMeshPro Component
             m_textMeshPro = GetComponent<TMP_Text>();
             m_textMeshPro.text = label01;
-            m_textMeshPro.enableWordWrapping = true;
+            m_textMeshPro.textWrappingMode = TextWrappingModes.Normal;
             m_textMeshPro.alignment = TextAlignmentOptions.Top;
 
 

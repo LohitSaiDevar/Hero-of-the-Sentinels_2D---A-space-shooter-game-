@@ -62,6 +62,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject mainCamera;
     AudioSource mainAudioSource;
     bool droneSpawned;
+
+    public bool isGameOver;
     void Start()
     {
         mainAudioSource = mainCamera.GetComponent<AudioSource>();
@@ -186,6 +188,7 @@ public class GameManager : MonoBehaviour
     }
     public void ReturnMainMenu()
     {
+        isGameOver = false;
         SceneManager.LoadScene(0);
         Time.timeScale = 1;
         bossReady = false;
@@ -199,6 +202,7 @@ public class GameManager : MonoBehaviour
     }
     public void RestartGame()
     {
+        isGameOver = false;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         Time.timeScale = 1;
         bossReady = false;
@@ -259,6 +263,7 @@ public class GameManager : MonoBehaviour
     }
     public void GameOver()
     {
+        isGameOver = true;
         gameOverText.gameObject.SetActive(true);
         restartButton.gameObject.SetActive(true);
         homeButton.gameObject.SetActive(true);
