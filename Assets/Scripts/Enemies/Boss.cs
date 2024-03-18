@@ -26,6 +26,12 @@ public class Boss : MonoBehaviour
     bool bulletSpawnedLeft;
     bool bulletSpawnedRight;
     float healthPercent;
+
+    EnemyLaser enemyLaser;
+    bool isLaserEnabled;
+    bool isPhase3;
+    [SerializeField] int laserTimer;
+    [SerializeField] GameObject lasersPrefab;
     private void Awake()
     {
         bossUI = GameObject.Find("Enemy_Boss_UI");
@@ -35,11 +41,17 @@ public class Boss : MonoBehaviour
         StartCoroutine(SpawnBulletRepeat());
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
+
+        enemyLaser = GetComponentInChildren<EnemyLaser>();
     }
 
     private void Update()
     {
-        //transform.Rotate(new Vector3(0, rotateSpeed, 0) * Time.deltaTime);
+        if (isPhase3)
+        {
+            transform.Rotate(new Vector3(0, rotateSpeed, 0) * Time.deltaTime);
+            ToggleLaser();
+        }
         healthPercent = currentHealth / maxHealth;
     }
     void SpawnBullets()
@@ -71,8 +83,8 @@ public class Boss : MonoBehaviour
             GameObject bulletInstance = Instantiate(homingMissilePrefab, leftSpawnPosition, Quaternion.identity);
             bulletInstance.transform.Rotate(0, leftAngle, 0);
             bulletSpawnedLeft = true;
+            isMissileLaunched = true;
         }
-
         if (!bulletSpawnedRight)
         {
             float rightAngle = 270f;
@@ -155,10 +167,27 @@ public class Boss : MonoBehaviour
         }
         else if (healthPercent <= 0.5f && healthPercent > 0.3f)
         {
-            if (!isMissileLaunched)
-            {
-                SpawnHomingBullets();
-            }
+            SpawnHomingBullets();
+        }
+        else if (healthPercent <= 0.3f && healthPercent > 0)
+        {
+            isPhase3 = true;
+        }
+    }
+    IEnumerator LaserSpawn(float coolDownTime)
+    {
+        yield return new WaitForSeconds(coolDownTime);
+        isLaserEnabled = true;
+        lasersPrefab.SetActive(true);
+        yield return new WaitForSeconds(coolDownTime);
+        isLaserEnabled = false;
+        lasersPrefab.SetActive(false);
+    }
+    void ToggleLaser()
+    {
+        if (!isLaserEnabled)
+        {
+            StartCoroutine(LaserSpawn(laserTimer));
         }
     }
 }
