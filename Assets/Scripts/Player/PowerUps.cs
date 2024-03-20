@@ -25,10 +25,8 @@ public class PowerUps : MonoBehaviour
     private void Start()
     {
         laserCDBar.SetMaxCooldown(laserCDMaxTime);
-        Debug.Log("Laser max cd: " + laserCDMaxTime);
         laserActive = false;
         defaultWeapon = true;
-        Debug.Log("Default weapon: " + defaultWeapon);
     }
     //Weapon type: Bullets
     public void ShootDefaultWeapon(Transform playerTransform)

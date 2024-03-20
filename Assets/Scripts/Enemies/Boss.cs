@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class Boss : MonoBehaviour
 {
-    [SerializeField] float moveSpeed = 5;
     [SerializeField] float rotateSpeed = 5;
 
     [SerializeField] GameObject bulletPrefab;
@@ -22,7 +21,6 @@ public class Boss : MonoBehaviour
     HealthBar_Player healthBar;
 
     [SerializeField] GameObject homingMissilePrefab;
-    bool isMissileLaunched;
     bool bulletSpawnedLeft;
     bool bulletSpawnedRight;
     float healthPercent;
@@ -83,7 +81,6 @@ public class Boss : MonoBehaviour
             GameObject bulletInstance = Instantiate(homingMissilePrefab, leftSpawnPosition, Quaternion.identity);
             bulletInstance.transform.Rotate(0, leftAngle, 0);
             bulletSpawnedLeft = true;
-            isMissileLaunched = true;
         }
         if (!bulletSpawnedRight)
         {
@@ -164,6 +161,7 @@ public class Boss : MonoBehaviour
             Destroy(gameObject);
             bossUI.SetActive(false);
             gameManager.UpdateScore(points);
+            gameManager.GameCompleted();
         }
         else if (healthPercent <= 0.5f && healthPercent > 0.3f)
         {

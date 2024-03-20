@@ -168,14 +168,12 @@ public class PlayerController : MonoBehaviour
     private void LevelUp()
     {
         minExp += 100;
-        Debug.Log("Min exp: " + minExp);
         expBar.SetMinExp(minExp);
         maxHealth += 10;
         attackDamage += 3;
         currentLvl++;
         upgrade.UpgradeSpaceship(currentLvl);
         lvlText.text = "LVL: " + currentLvl;
-        Debug.Log("Level Up, Lvl: " + currentLvl);
     }
 
     private void OnEnable()

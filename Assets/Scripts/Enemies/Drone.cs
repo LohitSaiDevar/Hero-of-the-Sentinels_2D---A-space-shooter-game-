@@ -59,7 +59,7 @@ public class Drone : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Bullet_player"))
+        if (collision.gameObject.CompareTag("Bullet_Player"))
         {
             Destroy(collision.gameObject);
             HandleCollisionDamage(player.attackDamage, gameObject);
@@ -82,6 +82,7 @@ public class Drone : MonoBehaviour
     void TakingDamage(int damage)
     {
         currentHealth -= damage;
+        Debug.Log("Drone's Health: " + currentHealth);
     }
 
     void HandleCollisionDamage(int damage, GameObject gameObject)

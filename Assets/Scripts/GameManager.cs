@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI highScoreText;
 
     [SerializeField] TextMeshProUGUI gameOverText;
+    [SerializeField] TextMeshProUGUI thankYouText;
+    [SerializeField] TextMeshProUGUI completedDemoText;
     [SerializeField] Button homeButton;
     [SerializeField] Button restartButton;
 
@@ -28,6 +30,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameObject mainMenuUI;
     [SerializeField] GameObject howToPlayMenuUI;
+
+
 
     public TextMeshProUGUI titleText; // Reference to the TextMeshPro component
     public float transitionDuration = 0.5f; // Duration of the color transition in seconds
@@ -54,6 +58,7 @@ public class GameManager : MonoBehaviour
     public bool starsSpawned;
 
     [SerializeField] AudioClip gameOverSound;
+    [SerializeField] AudioClip congratulationsSound;
     [SerializeField] AudioClip bossMusic;
     [SerializeField] AudioClip warningSound;
     AudioSource audioSource;
@@ -281,6 +286,31 @@ public class GameManager : MonoBehaviour
         highScoreText.text = "High Score: " + highScore;
         highScoreText.gameObject.SetActive(true);
         audioSource.PlayOneShot(gameOverSound, 0.3f);
+        bossReady = false;
+        mainAudioSource.Stop();
+    }
+
+    public void GameCompleted()
+    {
+        isGameOver = true;
+        thankYouText.gameObject.SetActive(true);
+        completedDemoText.gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
+        homeButton.gameObject.SetActive(true);
+        scoreText.gameObject.SetActive(false);
+
+        finalScoreText.text = "Score: " + score;
+        finalScoreText.gameObject.SetActive(true);
+
+        LoadHighScore();
+        if (score > highScore)
+        {
+            highScore = score;
+            SaveHighScore(highScore);
+        }
+        highScoreText.text = "High Score: " + highScore;
+        highScoreText.gameObject.SetActive(true);
+        audioSource.PlayOneShot(congratulationsSound, 0.3f);
         bossReady = false;
         mainAudioSource.Stop();
     }
