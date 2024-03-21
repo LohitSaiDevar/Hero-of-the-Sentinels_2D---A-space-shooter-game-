@@ -62,15 +62,15 @@ public class Bullet : MonoBehaviour
         {
             if (gameObject.CompareTag("Bullet"))
             {
-                Debug.Log("Changed to GruntBullet");
                 powerUps.BulletGruntActive();
                 Destroy(this.gameObject);
+                player.absorbedDmg += 1;
             }
             else if (gameObject.CompareTag("BulletElite"))
             {
-                Debug.Log("Changed to elite");
                 powerUps.BulletEliteActive();
                 Destroy(this.gameObject);
+                player.absorbedDmg += 2;
             }
         }
     }

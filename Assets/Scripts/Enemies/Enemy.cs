@@ -149,6 +149,7 @@ public class Enemy : MonoBehaviour
     //The explosion plays here
     void DestroyEnemy()
     {
+        gameManager.killCount += 1;
         // Instantiate the explosion effect prefab at the position of the enemy
         ParticleSystem explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
         explosionInstance.GetComponent<ParticleSystem>().Play();

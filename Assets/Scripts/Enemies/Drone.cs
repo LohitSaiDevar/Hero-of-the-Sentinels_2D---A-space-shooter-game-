@@ -16,6 +16,7 @@ public class Drone : MonoBehaviour
     bool laserActive;
     int currentHealth;
     [SerializeField] int laserTimer = 3;
+    GameManager gameManager;
     private void Awake()
     {
         player = GameObject.Find("Player").GetComponent<PlayerController>();
@@ -23,6 +24,7 @@ public class Drone : MonoBehaviour
         currentHealth = maxHealth;
 
         healthBar.SetMaxHealth(maxHealth);
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
     void Update()
     {
@@ -92,6 +94,7 @@ public class Drone : MonoBehaviour
         if (currentHealth <= 0)
         {
             Destroy(gameObject);
+            gameManager.killCount += 1;
         }
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-
+    public int killCount;
     [SerializeField] GameObject starsPrefab, enemyGruntPrefab, eliteGruntPrefab, dronePrefab, bossPrefab;
     [SerializeField] GameObject warningTextUI;
 
@@ -31,16 +31,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] GameObject mainMenuUI;
     [SerializeField] GameObject howToPlayMenuUI;
 
-
-
     public TextMeshProUGUI titleText; // Reference to the TextMeshPro component
     public float transitionDuration = 0.5f; // Duration of the color transition in seconds
 
     public bool bossReady = false;
     [SerializeField] GameObject bossUI;
+    bool bossSpawned;
 
     public static bool IsGamePaused = false;
-    //public static bool HasGameStarted = false;
 
     public bool keyboardOnly;
     public bool keyboardAndMouse;
@@ -94,10 +92,6 @@ public class GameManager : MonoBehaviour
             {
                 Pause();
             }
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            StartCoroutine(BossArrives());
         }
     }
 
@@ -231,40 +225,50 @@ public class GameManager : MonoBehaviour
         score += point;
         scoreText.text = "Score: " + score;
 
-        //Wave 1
-        if (!bossReady)
+        if (killCount == 25 && !bossReady)
         {
-            if (!droneSpawned && (score > 100 && score < 190))
+            bossReady = true; // Set bossReady to true when conditions are met
+            StartCoroutine(BossArrives());
+        }
+        else
+        {
+            // Continue with the existing logic for spawning enemies based on score
+            // This ensures that enemies keep spawning until the boss appears
+            if (!bossReady)
             {
-                SpawnDrone();
-                droneSpawned = true; // Set the flag to true to indicate that the drone has been spawned
-            }
-            else if (droneSpawned && (score > 200 && score < 290))
-            {
-                droneSpawned = false;
-            }
-            else if (!droneSpawned && score > 300)
-            {
-                SpawnDrone();
-                droneSpawned = true;
-            }
-            else
-            {
-                // Continue with the existing logic for spawning enemies based on score
-                if (score == 10)
+                if (!droneSpawned && (score > 100 && score < 190))
                 {
-                    SpawnEnemyGrunt();
+                    SpawnDrone();
+                    droneSpawned = true; // Set the flag to true to indicate that the drone has been spawned
                 }
-                else if (score == 30)
+                else if (droneSpawned && (score > 200 && score < 290))
                 {
-                    SpawnEnemyGrunt();
+                    droneSpawned = false;
                 }
-                else if (score == 50)
+                else if (!droneSpawned && score > 300)
                 {
-                    SpawnEliteGrunt();
+                    SpawnDrone();
+                    droneSpawned = true;
+                }
+                else
+                {
+                    // Continue with the existing logic for spawning enemies based on score
+                    if (score == 10)
+                    {
+                        SpawnEnemyGrunt();
+                    }
+                    else if (score == 30)
+                    {
+                        SpawnEnemyGrunt();
+                    }
+                    else if (score == 50)
+                    {
+                        SpawnEliteGrunt();
+                    }
                 }
             }
         }
+
     }
     public void GameOver()
     {

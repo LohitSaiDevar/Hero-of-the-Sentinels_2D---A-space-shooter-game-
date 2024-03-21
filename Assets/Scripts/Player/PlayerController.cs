@@ -1,9 +1,11 @@
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    
     public float speed;
     Rigidbody rb;
 
@@ -15,9 +17,13 @@ public class PlayerController : MonoBehaviour
     public int currentHealth;
     public int attackDamage;
 
-    GameManager gameManager;
-
+    //PowerAbsorber
     [SerializeField] PowerAbsorber powerAbsorber;
+    bool paCooldownActive;
+    public float paCDTime;
+    [SerializeField] float paMaxDmg;
+    [SerializeField] TextMeshProUGUI paCoolDownText;
+    public float absorbedDmg;
     [SerializeField] PowerUps powerUps;
 
     [SerializeField] ExperienceBar expBar;
@@ -26,8 +32,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Upgrade upgrade;
 
     CommandInvoker commandInvoker;
-    float horizontalInput;
-    float verticalInput;
 
     [SerializeField] ParticleSystem explosion;
 
@@ -39,7 +43,6 @@ public class PlayerController : MonoBehaviour
     {
         audioSource = GetComponent<AudioSource>();
         rb = GetComponent<Rigidbody>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
         Debug.Log("Current Health: " + currentHealth);
@@ -58,6 +61,7 @@ public class PlayerController : MonoBehaviour
         //Toggle PowerAbsorber On/Off
         TogglePowerAbsorber();
 
+
         //Weapons management
         Weapons();
     }
@@ -65,12 +69,6 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 moveDirection = GetMouseDirection();
         MouseMovement(moveDirection);
-    }
-    void KeyboardMovement(float horizontalInput, float verticalInput)
-    {
-        Vector3 movement = new(horizontalInput, 0, verticalInput);
-        movement.Normalize();
-        rb.velocity = movement * speed;
     }
     Vector3 GetMouseDirection()
     {
@@ -140,16 +138,46 @@ public class PlayerController : MonoBehaviour
     //To toggle Power Absorber On/Off
     void TogglePowerAbsorber()
     {
+        //Input
         bool powerAbsorberActive = Input.GetKey(KeyCode.LeftShift) || Input.GetMouseButton(1);
-        if (powerAbsorberActive && !powerAbsorber.gameObject.activeSelf)
+        //Set active
+        if (powerAbsorberActive && !powerAbsorber.gameObject.activeSelf && absorbedDmg <= paMaxDmg)
         {
             powerAbsorber.SetActiveState(true);
+            if (paCooldownActive)
+            {
+                StartCoroutine(PACoolDown());
+            }
         }
         // Check if power absorber was previously active and is now inactive
         else if (!powerAbsorberActive && powerAbsorber.gameObject.activeSelf)
         {
             powerAbsorber.SetActiveState(false);
         }
+        // Check if Cooldown is active
+        else if (absorbedDmg >= paMaxDmg)
+        {
+            paCooldownActive = true;
+        }
+        //If Cooldown is active, then Start Coroutine
+        if (paCooldownActive)
+        {
+            StartCoroutine(PACoolDown());
+        }
+    }
+
+    IEnumerator PACoolDown()
+    {
+        powerAbsorber.SetActiveState(false);
+        while (paCDTime > 0)
+        {
+            paCoolDownText.gameObject.SetActive(true);
+            paCDTime = Mathf.Max(0, paCDTime - Time.deltaTime);
+            yield return null;
+        }
+        absorbedDmg = 0;
+        paCoolDownText.gameObject.SetActive(false);
+        paCooldownActive = false;
     }
 
     public void HandleExperienceChange(int newExp)
@@ -169,7 +197,7 @@ public class PlayerController : MonoBehaviour
     {
         minExp += 100;
         expBar.SetMinExp(minExp);
-        maxHealth += 10;
+        maxHealth += 100;
         attackDamage += 3;
         currentLvl++;
         upgrade.UpgradeSpaceship(currentLvl);

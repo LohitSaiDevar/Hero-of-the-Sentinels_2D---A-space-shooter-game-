@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PowerUps : MonoBehaviour
@@ -14,13 +15,15 @@ public class PowerUps : MonoBehaviour
     public bool countdown;
 
     public bool laserActive;
-    private float laserCDTime = 0;
+    private float laserCDTime = 0; 
     public bool laserCooldown;
     int laserCDMaxTime = 5;
     public bool isCooldownActive = false;
     [SerializeField] CooldownBar laserCDBar;
 
     public bool changeToBulletGrunt, changeToBulletElite, changeToLaser, defaultWeapon;
+
+    [SerializeField] TextMeshProUGUI cooldownLaserText;
 
     private void Start()
     {
@@ -131,11 +134,12 @@ public class PowerUps : MonoBehaviour
 
         while (laserCDTime > 0)
         {
+            cooldownLaserText.gameObject.SetActive(true);
             laserCDTime = Mathf.Max(0, laserCDTime - Time.deltaTime);
             laserCDBar.SetCooldown(laserCDTime);
             yield return null;
         }
-
+        cooldownLaserText.gameObject.SetActive(false);
         laserCDBar.gameObject.SetActive(false);
         isCooldownActive = false;
         laserCooldown = false;

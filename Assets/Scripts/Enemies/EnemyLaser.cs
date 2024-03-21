@@ -4,6 +4,7 @@ public class EnemyLaser : MonoBehaviour
 {
     PlayerController player;
     GameManager gameManager;
+    PowerUps powerUp;
     private void Awake()
     {
         player = GameObject.Find("Player").GetComponent<PlayerController>();
@@ -16,6 +17,11 @@ public class EnemyLaser : MonoBehaviour
             Destroy(other.gameObject);
             player.PlayExplosion();
             gameManager.GameOver();
+        }
+        else if (other.gameObject.CompareTag("PowerAbsorber"))
+        {
+            powerUp.LaserActive();
+            player.absorbedDmg += 5;
         }
     }
 }
