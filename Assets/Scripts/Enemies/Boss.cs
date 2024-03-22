@@ -123,14 +123,18 @@ public class Boss : MonoBehaviour
         {
             CollisionDamage(collision, 4);
         }
+    }
+    private void OnCollisionStay(Collision collision)
+    {
         if (collision.gameObject.CompareTag("Player_Laser"))
         {
-            TakingDamage(0);
+            TakingDamage((player.attackDamage + 30) * Time.deltaTime); // Apply damage per second
             healthBar.SetHealth(currentHealth);
             if (currentHealth <= 0)
             {
                 Destroy(gameObject);
-                gameManager.UpdateScore(points);
+                PlayExplosion();
+                gameManager.killCount += 1;
             }
         }
     }
@@ -144,20 +148,10 @@ public class Boss : MonoBehaviour
         TakingDamage(player.attackDamage + extraDmg);
         healthBar.SetHealth(currentHealth);
         Destroy(collision.gameObject);
-        Debug.Log("Health Percent: " + healthPercent);
 
         if (currentHealth <= 0)
         {
-            ParticleSystem explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
-            explosionInstance.GetComponent<ParticleSystem>().Play();
-            if (explosionInstance.GetComponent<AudioSource>() != null)
-            {
-                explosionInstance.GetComponent<AudioSource>().PlayOneShot(explosionSound, 0.3f);
-            }
-            else
-            {
-                Debug.Log("Audio Source is missing!");
-            }
+            PlayExplosion();
             Destroy(gameObject);
             bossUI.SetActive(false);
             gameManager.UpdateScore(points);
@@ -186,6 +180,19 @@ public class Boss : MonoBehaviour
         if (!isLaserEnabled)
         {
             StartCoroutine(LaserSpawn(laserTimer));
+        }
+    }
+    void PlayExplosion()
+    {
+        ParticleSystem explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
+        explosionInstance.GetComponent<ParticleSystem>().Play();
+        if (explosionInstance.GetComponent<AudioSource>() != null)
+        {
+            explosionInstance.GetComponent<AudioSource>().PlayOneShot(explosionSound, 0.3f);
+        }
+        else
+        {
+            Debug.Log("Audio Source is missing!");
         }
     }
 }

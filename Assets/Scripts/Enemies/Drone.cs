@@ -60,25 +60,25 @@ public class Drone : MonoBehaviour
     {
         yield return new WaitForSeconds(coolDownTime);
         if (!laserActive)
-        {
-            // Activate the laser
-            laserActive = true;
-
-            // Play the laser sound
-            GetComponent<AudioSource>().PlayOneShot(laserSound, 0.1f);
-
-            // Activate the laser prefab
-            lasersPrefab.SetActive(true);
-
-            // Wait for the cooldown time again before deactivating the laser
-            yield return new WaitForSeconds(coolDownTime);
-
-            // Deactivate the laser
-            laserActive = false;
-
-            // Deactivate the laser prefab
-            lasersPrefab.SetActive(false);
-        }
+    {
+        // Activate the laser
+        laserActive = true;
+        
+        // Play the laser sound
+        GetComponent<AudioSource>().PlayOneShot(laserSound, 0.1f);
+        
+        // Activate the laser prefab
+        lasersPrefab.SetActive(true);
+        
+        // Wait for the cooldown time again before deactivating the laser
+        yield return new WaitForSeconds(coolDownTime);
+        
+        // Deactivate the laser
+        laserActive = false;
+        
+        // Deactivate the laser prefab
+        lasersPrefab.SetActive(false);
+    }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -87,10 +87,6 @@ public class Drone : MonoBehaviour
         {
             Destroy(collision.gameObject);
             HandleCollisionDamage(player.attackDamage, gameObject);
-        }
-        else if (collision.gameObject.CompareTag("Player_Laser"))
-        {
-            HandleCollisionDamage(player.attackDamage + 30, gameObject);
         }
         else if (collision.gameObject.CompareTag("Player_GruntBullet"))
         {
@@ -103,10 +99,24 @@ public class Drone : MonoBehaviour
             Destroy(collision.gameObject);
         }
     }
+    private void OnCollisionStay(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Player_Laser"))
+        {
+            TakingDamage((player.attackDamage + 30) * Time.deltaTime); // Apply damage per second
+            healthBar.SetHealth(currentHealth);
+            if (currentHealth <= 0)
+            {
+                Destroy(gameObject);
+                PlayExplosion();
+                gameManager.killCount += 1;
+            }
+        }
+    }
+
     void TakingDamage(float damage)
     {
         currentHealth -= damage;
-        Debug.Log("Drone's Health: " + currentHealth);
     }
 
     void HandleCollisionDamage(float damage, GameObject gameObject)

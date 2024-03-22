@@ -17,8 +17,8 @@ public class PowerUps : MonoBehaviour
     public bool laserActive;
     private float laserCDTime = 0; 
     public bool laserCooldown;
-    int laserCDMaxTime = 5;
-    public bool isCooldownActive = false;
+    [SerializeField] int laserCDMaxTime;
+    public bool isCooldownActive;
     [SerializeField] CooldownBar laserCDBar;
 
     public bool changeToBulletGrunt, changeToBulletElite, changeToLaser, defaultWeapon;
@@ -28,7 +28,6 @@ public class PowerUps : MonoBehaviour
     private void Start()
     {
         laserCDBar.SetMaxCooldown(laserCDMaxTime);
-        laserActive = false;
         defaultWeapon = true;
     }
     //Weapon type: Bullets
@@ -125,12 +124,14 @@ public class PowerUps : MonoBehaviour
         changeToBulletGrunt = false;
         changeToBulletElite = false;
         changeToLaser = true;
+        StartCoroutine(LaserToggleOff());
     }
 
     public IEnumerator LaserCooldown()
     {
         isCooldownActive = true;
         weapons[3].SetActive(false);
+        Debug.Log("Cooldown active: " + isCooldownActive);
 
         while (laserCDTime > 0)
         {
@@ -143,5 +144,10 @@ public class PowerUps : MonoBehaviour
         laserCDBar.gameObject.SetActive(false);
         isCooldownActive = false;
         laserCooldown = false;
+    }
+    IEnumerator LaserToggleOff()
+    {
+        yield return new WaitForSeconds(60);
+        DefaultWeaponActive();
     }
 }

@@ -85,7 +85,6 @@ public class Enemy : MonoBehaviour
         if (collision.gameObject.CompareTag("Player_Laser"))
         {
             HandleBulletCollision(maxHealth);
-            Destroy(collision.gameObject);
         }
     }
     void TakingDamage(float damage)
@@ -176,7 +175,6 @@ public class Enemy : MonoBehaviour
             {
                 gameManager.SpawnEliteGrunt();
             }
-            Debug.Log("Wave 1 completed!");
             expManager.AddExperience(expPoints);
         }
         gameManager.UpdateScore(points);

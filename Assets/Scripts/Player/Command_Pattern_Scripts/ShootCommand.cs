@@ -29,7 +29,7 @@ public class ShootCommand : ICommand
             powerUps.laserActive = true;
             powerUps.ToggleLaser();
 
-            if (!powerUps.laserCooldown && !powerUps.isCooldownActive)
+            if (powerUps.laserCooldown && !powerUps.isCooldownActive)
             {
                 powerUps.StartCoroutine(powerUps.LaserCooldown());
             }

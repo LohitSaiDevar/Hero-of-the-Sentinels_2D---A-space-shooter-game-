@@ -6,6 +6,10 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] Button damageIncreaseUI;
+    [SerializeField] Button powerAbsorberToggleUI;
+    [SerializeField] Button maxHealthIncreaseUI;
+    [SerializeField] Button playerLaserToggleUI;
     [SerializeField] GameObject levelUpUI;
     public int killCount;
     [SerializeField] GameObject starsPrefab, enemyGruntPrefab, eliteGruntPrefab, dronePrefab, bossPrefab;
@@ -230,7 +234,7 @@ public class GameManager : MonoBehaviour
         score += point;
         scoreText.text = "Score: " + score;
 
-        if (killCount == 25 && !bossReady)
+        if (killCount == 50 && !bossReady)
         {
             bossReady = true; // Set bossReady to true when conditions are met
             StartCoroutine(BossArrives());
@@ -386,15 +390,33 @@ public class GameManager : MonoBehaviour
         LevelUpScreenOff();
     }
 
+    public void PlayerLaser()
+    {
+        PowerUps powerUps = GameObject.Find("Player").GetComponent<PowerUps>();
+        powerUps.LaserActive();
+        LevelUpScreenOff();
+    }
+
     public void LevelUpScreenOn()
     {
         levelUpUI.SetActive(true);
+        LevelUpUI(true);
         Time.timeScale = 0f;
     }
 
     void LevelUpScreenOff()
     {
         levelUpUI.SetActive(false);
+        LevelUpUI(false);
         Time.timeScale = 1f;
+    }
+    void LevelUpUI(bool isActive)
+    {
+        bool randomPowerUp = Random.Range(0, 2) == 0;
+
+        playerLaserToggleUI.gameObject.SetActive(randomPowerUp && isActive);
+        damageIncreaseUI.gameObject.SetActive(!randomPowerUp && isActive);
+        powerAbsorberToggleUI.gameObject.SetActive(isActive);
+        maxHealthIncreaseUI.gameObject.SetActive(isActive);
     }
 }

@@ -45,9 +45,6 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
-        Debug.Log("Current Health: " + currentHealth);
-        Debug.Log("Current lvl: " + currentLvl);
-        Debug.Log("Min exp: " + minExp);
         expBar.SetMinExp(currentExp);
         expBar.GetComponent<Slider>().maxValue = maxExp;
         commandInvoker = GetComponent<CommandInvoker>();
@@ -114,19 +111,19 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetMouseButtonUp(0)) // Check for left mouse button release
         {
             isShooting = false; // Stop shooting
+            if (powerUps.laserActive) // Check if the laser is active
+            {
+                powerUps.laserActive = false; // Stop the laser
+                powerUps.ToggleLaser();
+            }
         }
-        if ((isShooting || Input.GetKey(KeyCode.Space)) && !powerUps.countdown)
+        if (isShooting && !powerUps.countdown)
         {
             audioSource.PlayOneShot(bulletSound, 0.002f);
             audioSource.pitch = 3;
             ICommand shootCommand = new ShootCommand(powerUps, transform);
             commandInvoker.SetShootCommand(shootCommand);
             commandInvoker.ExecuteShootCommand();
-        }
-        else
-        {
-            if (powerUps != null)
-                powerUps.laserActive = false;
         }
     }
 
@@ -185,7 +182,6 @@ public class PlayerController : MonoBehaviour
     public void HandleExperienceChange(int newExp)
     {
         currentExp += newExp;
-        Debug.Log("Current exp: " + currentExp);
         expBar.SetExp(currentExp);
         if (currentExp >= maxExp)
         {
