@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] GameObject levelUpUI;
     public int killCount;
     [SerializeField] GameObject starsPrefab, enemyGruntPrefab, eliteGruntPrefab, dronePrefab, bossPrefab;
     [SerializeField] GameObject warningTextUI;
@@ -30,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameObject mainMenuUI;
     [SerializeField] GameObject howToPlayMenuUI;
+    public static bool IsGamePausedForLevelUp = false;
 
     public TextMeshProUGUI titleText; // Reference to the TextMeshPro component
     public float transitionDuration = 0.5f; // Duration of the color transition in seconds
@@ -39,10 +41,6 @@ public class GameManager : MonoBehaviour
     bool bossSpawned;
 
     public static bool IsGamePaused = false;
-
-    public bool keyboardOnly;
-    public bool keyboardAndMouse;
-    public bool mouseOnly;
     [SerializeField] TextMeshProUGUI controls;
     [SerializeField] GameObject controlsUI;
 
@@ -61,12 +59,13 @@ public class GameManager : MonoBehaviour
     [SerializeField] AudioClip warningSound;
     AudioSource audioSource;
 
-    [SerializeField] GameObject player;
+    [SerializeField] GameObject playerObject;
     [SerializeField] GameObject mainCamera;
     AudioSource mainAudioSource;
     bool droneSpawned;
 
     public bool isGameOver;
+    PlayerController player;
     void Start()
     {
         mainAudioSource = mainCamera.GetComponent<AudioSource>();
@@ -76,9 +75,15 @@ public class GameManager : MonoBehaviour
         SpawnEnemyGrunt();
         SpawnEnemyGrunt();
         SpawnEnemyGrunt();
-
-        LoadControlLayout();
-        
+        player = GameObject.Find("Player")?.GetComponent<PlayerController>();
+        if (player != null)
+        {
+            return;
+        }
+        else
+        {
+            Debug.Log("Player destroyed!");
+        } 
     }
     private void Update()
     {
@@ -183,7 +188,7 @@ public class GameManager : MonoBehaviour
     {
         mainMenuUI.SetActive(false);
         howToPlayMenuUI.SetActive(true);
-        player.SetActive(false);
+        playerObject.SetActive(false);
     }
     public void ReturnMainMenu()
     {
@@ -197,7 +202,7 @@ public class GameManager : MonoBehaviour
     {
         howToPlayMenuUI.SetActive(false);
         mainMenuUI.SetActive(true);
-        player.SetActive(true);
+        playerObject.SetActive(true);
     }
     public void RestartGame()
     {
@@ -318,34 +323,6 @@ public class GameManager : MonoBehaviour
         bossReady = false;
         mainAudioSource.Stop();
     }
-
-    public void SetKeyboardOnly()
-    {
-        keyboardOnly = true;
-        keyboardAndMouse = false;
-        mouseOnly = false;
-        controls.text = ": Keyboard Only";
-        SaveControlLayout(": Keyboard Only");
-    }
-
-    public void SetKeyboardAndMouse()
-    {
-        keyboardAndMouse = true;
-        mouseOnly = false;
-        keyboardOnly = false;
-        controls.text = ": Keyboard & Mouse";
-        SaveControlLayout(": Keyboard & Mouse");
-    }
-
-    public void SetMouseOnly()
-    {
-        mouseOnly = true;
-        keyboardAndMouse = false; 
-        keyboardOnly = false;
-        controls.text = ": Mouse Only";
-        SaveControlLayout(": Mouse Only");
-    }
-
     public void OpenControlsPanel()
     {
         if (!controlsUIActive)
@@ -376,17 +353,6 @@ public class GameManager : MonoBehaviour
             paExplanationUI.SetActive(paExplanationUIActive);
         }
     }
-    void SaveControlLayout(string layout)
-    {
-        PlayerPrefs.SetString("ControlLayout", layout);
-    }
-
-    // Load the last selected control layout from PlayerPrefs
-    void LoadControlLayout()
-    {
-        string layout = PlayerPrefs.GetString("ControlLayout", "Keyboard Only"); // Default to "Keyboard Only" if not found
-        controls.text = layout;
-    }
     void SaveHighScore(int highScore)
     {
         PlayerPrefs.SetInt("HighScore", highScore);
@@ -397,5 +363,38 @@ public class GameManager : MonoBehaviour
     {
         int savedHighScore = PlayerPrefs.GetInt("HighScore", 0);
         highScore = savedHighScore;
+    }
+
+    public void DamageIncrease()
+    {
+        float damagePercent = 10;
+        player.attackDamage += player.attackDamage * (damagePercent / 100);
+        LevelUpScreenOff();
+    }
+
+    public void PowerAbsorberUpgrade()
+    {
+        player.paMaxDmg += 1;
+        float cdTimePercent = 10;
+        player.paCDTime -= player.paCDTime * (cdTimePercent / 100);
+        LevelUpScreenOff();
+    }
+    public void MaxHealthIncrease()
+    {
+        float healthPercent = 10;
+        player.maxHealth += player.maxHealth * (healthPercent / 100);
+        LevelUpScreenOff();
+    }
+
+    public void LevelUpScreenOn()
+    {
+        levelUpUI.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    void LevelUpScreenOff()
+    {
+        levelUpUI.SetActive(false);
+        Time.timeScale = 1f;
     }
 }

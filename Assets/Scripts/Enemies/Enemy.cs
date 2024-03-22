@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] HealthBar healthBar;
     GameManager gameManager;
     [SerializeField] int maxHealth = 15;
-    int currentHealth;
+    float currentHealth;
     [SerializeField] int points;
     [SerializeField] int expPoints;
 
@@ -88,7 +88,7 @@ public class Enemy : MonoBehaviour
             Destroy(collision.gameObject);
         }
     }
-    void TakingDamage(int damage)
+    void TakingDamage(float damage)
     {
         currentHealth -= damage;
     }
@@ -136,7 +136,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void HandleBulletCollision(int damage)
+    void HandleBulletCollision(float damage)
     {
         TakingDamage(damage);
         healthBar.SetHealth(currentHealth);

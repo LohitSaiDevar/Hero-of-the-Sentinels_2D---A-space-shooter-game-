@@ -18,10 +18,5 @@ public class EnemyLaser : MonoBehaviour
             player.PlayExplosion();
             gameManager.GameOver();
         }
-        else if (other.gameObject.CompareTag("PowerAbsorber"))
-        {
-            powerUp.LaserActive();
-            player.absorbedDmg += 5;
-        }
     }
 }

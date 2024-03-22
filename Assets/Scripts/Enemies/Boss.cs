@@ -134,7 +134,7 @@ public class Boss : MonoBehaviour
             }
         }
     }
-    void TakingDamage(int damage)
+    void TakingDamage(float damage)
     {
         currentHealth -= damage;
     }

@@ -1,5 +1,7 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class Drone : MonoBehaviour
 {
@@ -14,9 +16,13 @@ public class Drone : MonoBehaviour
 
     [SerializeField] HealthBar healthBar;
     bool laserActive;
-    int currentHealth;
+    float currentHealth;
     [SerializeField] int laserTimer = 3;
     GameManager gameManager;
+
+    [SerializeField] ParticleSystem explosion;
+    [SerializeField] AudioClip explosionSound;
+    [SerializeField] AudioClip laserSound;
     private void Awake()
     {
         player = GameObject.Find("Player").GetComponent<PlayerController>();
@@ -46,17 +52,33 @@ public class Drone : MonoBehaviour
     {
         if (!laserActive)
         {
+            
             StartCoroutine(LaserSpawn(laserTimer));
         }
     }
     IEnumerator LaserSpawn(float coolDownTime)
     {
         yield return new WaitForSeconds(coolDownTime);
-        laserActive = true;
-        lasersPrefab.SetActive(true);
-        yield return new WaitForSeconds(coolDownTime);
-        laserActive = false;
-        lasersPrefab.SetActive(false);
+        if (!laserActive)
+        {
+            // Activate the laser
+            laserActive = true;
+
+            // Play the laser sound
+            GetComponent<AudioSource>().PlayOneShot(laserSound, 0.1f);
+
+            // Activate the laser prefab
+            lasersPrefab.SetActive(true);
+
+            // Wait for the cooldown time again before deactivating the laser
+            yield return new WaitForSeconds(coolDownTime);
+
+            // Deactivate the laser
+            laserActive = false;
+
+            // Deactivate the laser prefab
+            lasersPrefab.SetActive(false);
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -81,20 +103,34 @@ public class Drone : MonoBehaviour
             Destroy(collision.gameObject);
         }
     }
-    void TakingDamage(int damage)
+    void TakingDamage(float damage)
     {
         currentHealth -= damage;
         Debug.Log("Drone's Health: " + currentHealth);
     }
 
-    void HandleCollisionDamage(int damage, GameObject gameObject)
+    void HandleCollisionDamage(float damage, GameObject gameObject)
     {
         TakingDamage(damage);
         healthBar.SetHealth(currentHealth);
         if (currentHealth <= 0)
         {
             Destroy(gameObject);
+            PlayExplosion();
             gameManager.killCount += 1;
+        }
+    }
+    void PlayExplosion()
+    {
+        ParticleSystem explosionInstance = Instantiate(explosion, transform.position, Quaternion.identity);
+        explosionInstance.GetComponent<ParticleSystem>().Play();
+        if (explosionInstance.GetComponent<AudioSource>() != null)
+        {
+            explosionInstance.GetComponent<AudioSource>().PlayOneShot(explosionSound, 0.3f);
+        }
+        else
+        {
+            Debug.Log("Audio Source is missing!");
         }
     }
 }

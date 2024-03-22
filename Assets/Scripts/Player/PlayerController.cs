@@ -8,20 +8,20 @@ public class PlayerController : MonoBehaviour
     
     public float speed;
     Rigidbody rb;
-
+    GameManager gameManager;
     private bool isShooting;
 
     public HealthBar_Player healthBar;
-    [SerializeField] int maxHealth = 20;
-    int currentExp = 0, minExp = 0, maxExp = 100;
-    public int currentHealth;
-    public int attackDamage;
+    public float maxHealth = 20;
+    int currentExp = 0, minExp = 0, maxExp = 20;
+    public float currentHealth;
+    public float attackDamage;
 
     //PowerAbsorber
     [SerializeField] PowerAbsorber powerAbsorber;
     bool paCooldownActive;
     public float paCDTime;
-    [SerializeField] float paMaxDmg;
+    public float paMaxDmg;
     [SerializeField] TextMeshProUGUI paCoolDownText;
     public float absorbedDmg;
     [SerializeField] PowerUps powerUps;
@@ -51,6 +51,8 @@ public class PlayerController : MonoBehaviour
         expBar.SetMinExp(currentExp);
         expBar.GetComponent<Slider>().maxValue = maxExp;
         commandInvoker = GetComponent<CommandInvoker>();
+
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
     void Update()
     {
@@ -146,7 +148,7 @@ public class PlayerController : MonoBehaviour
             powerAbsorber.SetActiveState(true);
             if (paCooldownActive)
             {
-                StartCoroutine(PACoolDown());
+                StartCoroutine(PACoolDown(paCDTime));
             }
         }
         // Check if power absorber was previously active and is now inactive
@@ -162,18 +164,18 @@ public class PlayerController : MonoBehaviour
         //If Cooldown is active, then Start Coroutine
         if (paCooldownActive)
         {
-            StartCoroutine(PACoolDown());
+            StartCoroutine(PACoolDown(paCDTime));
         }
     }
 
-    IEnumerator PACoolDown()
+    IEnumerator PACoolDown(float count)
     {
         powerAbsorber.SetActiveState(false);
-        while (paCDTime > 0)
+        paCoolDownText.gameObject.SetActive(true);
+        while (count > 0)
         {
-            paCoolDownText.gameObject.SetActive(true);
-            paCDTime = Mathf.Max(0, paCDTime - Time.deltaTime);
-            yield return null;
+            yield return new WaitForSeconds(1);
+            count--;
         }
         absorbedDmg = 0;
         paCoolDownText.gameObject.SetActive(false);
@@ -188,18 +190,17 @@ public class PlayerController : MonoBehaviour
         if (currentExp >= maxExp)
         {
             LevelUp();
-            maxExp += 100;
+            maxExp *= 2;
             expBar.GetComponent<Slider>().maxValue = maxExp;
         }
     }
 
     private void LevelUp()
     {
-        minExp += 100;
+        minExp = 0;
         expBar.SetMinExp(minExp);
-        maxHealth += 100;
-        attackDamage += 3;
         currentLvl++;
+        gameManager.LevelUpScreenOn();
         upgrade.UpgradeSpaceship(currentLvl);
         lvlText.text = "LVL: " + currentLvl;
     }

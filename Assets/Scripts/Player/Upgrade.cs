@@ -16,7 +16,7 @@ public class Upgrade : MonoBehaviour
     public void UpgradeSpaceship(int lvl)
     {
         // Change the sprite to the 'Medium' sprite
-        if (lvl == 3)
+        if (lvl == 5)
         {
             player.speed += 3;
             if (lvl2Sprite != null)
@@ -28,7 +28,7 @@ public class Upgrade : MonoBehaviour
                 Debug.LogError("Medium sprite not assigned in the inspector.");
             }
         }
-        else if(lvl == 6)
+        else if(lvl == 10)
         {
             player.speed += 3;
             if (lvl3Sprite != null)
