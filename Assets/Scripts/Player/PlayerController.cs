@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour
 
     public HealthBar_Player healthBar;
     public float maxHealth = 20;
-    int currentExp = 0, minExp = 0, maxExp = 20;
+    public int currentExp = 0, minExp = 0, maxExp;
     public float currentHealth;
     public float attackDamage;
 

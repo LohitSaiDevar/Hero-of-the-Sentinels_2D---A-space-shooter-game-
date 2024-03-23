@@ -117,7 +117,7 @@ public class Enemy : MonoBehaviour
     {
         if (gameObject.CompareTag("Elite"))
         {
-            if (Mathf.Abs(transform.position.x - player.transform.position.x) > 0)
+            if (player != null && Mathf.Abs(transform.position.x - player.transform.position.x) > 0)
             {
                 if (transform.position.x < player.transform.position.x)
                 {

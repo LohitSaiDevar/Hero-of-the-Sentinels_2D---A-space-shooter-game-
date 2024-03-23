@@ -399,9 +399,16 @@ public class GameManager : MonoBehaviour
 
     public void LevelUpScreenOn()
     {
-        levelUpUI.SetActive(true);
-        LevelUpUI(true);
-        Time.timeScale = 0f;
+        if (levelUpUI != null)
+        {
+            levelUpUI.SetActive(true);
+            LevelUpUI(true);
+            Time.timeScale = 0f;
+        }
+        else
+        {
+            Debug.LogError("levelUpUI is null. Make sure it's assigned in the Inspector.");
+        }
     }
 
     void LevelUpScreenOff()
