@@ -229,6 +229,16 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
         IsGamePaused = true;
     }
+
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
+
     public void UpdateScore(int point)
     {
         score += point;
